@@ -31,7 +31,7 @@ void printCookies(const Http::Request& req) {
     std::cout << "]" << std::endl;
 }
 
-namespace Generic {
+namespace GenericS {
 
 void handleReady(const Rest::Request&, Http::ResponseWriter response) {
     response.send(Http::Code::Ok, "1");
@@ -68,7 +68,7 @@ private:
 
         Routes::Post(router, "/record/:name/:value?", Routes::bind(&StatsEndpoint::doRecordMetric, this));
         Routes::Get(router, "/value/:name", Routes::bind(&StatsEndpoint::doGetMetric, this));
-        Routes::Get(router, "/ready", Routes::bind(&Generic::handleReady));
+        Routes::Get(router, "/ready", Routes::bind(&GenericS::handleReady));
         Routes::Get(router, "/auth", Routes::bind(&StatsEndpoint::doAuth, this));
 
     }
