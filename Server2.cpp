@@ -42,6 +42,11 @@ public:
         this->value = value;
     }
     
+    SharedData(){
+        this->num = 0;
+        this->value = "";
+    }
+    
     SharedData(string value){
         this->num = 0;
         this->value = value;
@@ -55,6 +60,14 @@ public:
         return this->num;
     }
     
+    void setNum(int num){
+        this->num = num;
+    }
+    
+    void setValue(string value){
+        this->value = value;
+    }
+    
     string getValue(){
         return this->value;
     }
@@ -63,10 +76,17 @@ public:
     template <typename Writer>
     void Serialize(Writer& writer) const {
         // This base class just write out name-value pairs, without wrapping within an object.
-        writer.String("value");
+       /* writer.String("value");
         writer.String(value.c_str(), value.length());
         writer.String("num");
         writer.Uint(num);
+        */
+        writer.StartObject(); 
+        writer.Key("value");                
+        writer.String(value.c_str(), value.length());
+        writer.Key("num");
+        writer.Uint(num);
+        writer.EndObject();
     }
     
 private:
@@ -99,8 +119,13 @@ public:
         sharedDatas.push_back(data);
     }
     
+    vector<SharedData> getSharedDatas(){
+        return sharedDatas;
+    }
+    
     template <typename Writer>
     void Serialize(Writer& writer) const {
+        /*
         writer.StartObject();
 
 //        sharedDatas.back().Serialize(writer);
@@ -116,6 +141,27 @@ public:
         writer.EndArray();
 
         writer.EndObject();
+         * 
+         * */
+        
+        writer.StartObject();
+
+//        sharedDatas.back().Serialize(writer);
+       // SharedData::Serialize(writer);
+
+        writer.Key("active");
+        writer.Uint(active);
+
+        writer.Key("sharedData");
+        writer.StartArray();
+        for (std::vector<SharedData>::const_iterator sharedDataItr = sharedDatas.begin(); sharedDataItr != sharedDatas.end(); ++sharedDataItr)
+            sharedDataItr->Serialize(writer);
+        writer.EndArray();
+
+        writer.EndObject();
+        
+        
+        
     }
 private:
     int active;
@@ -240,15 +286,20 @@ private:
         cout << jsonBody;
         
         
-        
+        /*
         // modify
         rapidjson::Value& s = d["stars"];
         s.SetInt(s.GetInt() + 1);
         
         rapidjson::Value& p = d["project"];
         p.SetString("ooblock");
+        */
         
         
+        
+        
+        
+        /*
         //test with larger set
         std::vector<SharedDataContainer> dataContainers;
         
@@ -275,7 +326,8 @@ private:
         
         
         response.send(Http::Code::Ok, buffera.GetString());
-        
+         */
+              
         /*
         // turn back to json string
         rapidjson::StringBuffer buffer;
@@ -284,6 +336,79 @@ private:
         
         response.send(Http::Code::Ok, buffer.GetString());
         */
+        
+        //***************************************************************************************************
+        //read large set and Send back
+        rapidjson::Value& a = d;
+
+	static const char* kTypeNames[] = { "Null", "False", "True", "Object", "Array", "String", "Number" };
+
+	vector<SharedDataContainer> dataContainers;
+
+	for (rapidjson::Value::ConstValueIterator InitialArray = a.Begin(); InitialArray != a.End(); ++InitialArray){
+
+
+		for (rapidjson::Value::ConstMemberIterator InitialObject = InitialArray->MemberBegin(); InitialObject != InitialArray->MemberEnd(); ++InitialObject) {
+    			//printf("Type of member %s is %s  %d\n", InitialObject->name.GetString(), kTypeNames[InitialObject->value.GetType()], InitialObject->value.GetType());
+
+    			//cout << itr->value.GetType();
+    			string active = "active";
+    			string sharedData = "sharedData";
+    			string temp = InitialObject->name.GetString();
+    			if (InitialObject->value.GetType() == 6 && !temp.compare(active)){
+    				//cout << itr->value.GetInt() << endl;
+    				dataContainers.push_back(SharedDataContainer(InitialObject->value.GetInt()));
+    			}
+
+    			if (InitialObject->value.GetType() == 4 && !temp.compare(sharedData)){
+    				//cout << itr->value.GetInt() << endl;
+                            //cout << "got array";
+                            
+                            for (rapidjson::Value::ConstValueIterator finalObject = InitialObject->value.Begin(); finalObject != InitialObject->value.End(); ++finalObject) {
+                            //printf("Type of member %s is %s  %d\n", finalObject->, kTypeNames[finalObject->value.GetType()], finalObject->value.GetType());
+                                
+                                SharedData tempSharedData;
+                                
+                                string value = "value";
+                                string num = "num";
+                                for (rapidjson::Value::ConstMemberIterator FinalObjectMembers = finalObject->MemberBegin(); FinalObjectMembers != finalObject->MemberEnd(); ++FinalObjectMembers) {
+                                    string temp = FinalObjectMembers->name.GetString();
+                                    //printf("Type of member %s is %s  %d\n", FinalObjectMembers->name.GetString(), kTypeNames[FinalObjectMembers->value.GetType()], FinalObjectMembers->value.GetType());
+                                    
+                                    if (FinalObjectMembers->value.GetType() == 5 && !temp.compare(value)){
+                                        tempSharedData.setValue(FinalObjectMembers->value.GetString());
+                                        //cout << "got value" << endl;
+                                    }  
+                                    
+                                    
+                                    if (FinalObjectMembers->value.GetType() == 6 && !temp.compare(num)){
+                                        tempSharedData.setNum(FinalObjectMembers->value.GetInt());
+                                        //cout << "got num" << endl;
+                                    }  
+                                                                    
+                                }
+                                
+                                dataContainers.back().AddSharedData(tempSharedData);
+                            }
+                        }                      	
+    		}
+	}
+        //cout << "\nFinaly " << dataContainers.at(0).getSharedDatas().at(0).getValue() << " with a value of " << dataContainers.at(0).getSharedDatas().at(0).getNum() << endl;
+        rapidjson::StringBuffer buffera;
+        rapidjson::Writer<rapidjson::StringBuffer> writera(buffera);
+        
+        writera.StartArray();
+        for (std::vector<SharedDataContainer>::const_iterator sharedDataItr = dataContainers.begin(); sharedDataItr != dataContainers.end(); ++sharedDataItr)
+        sharedDataItr->Serialize(writera);
+        writera.EndArray();
+        
+    
+        
+        response.send(Http::Code::Ok, buffera.GetString());
+        //***************************************************************************************************
+        //END OF read large set and Send back
+
+   
     }
 
     void creditAccount(const Rest::Request&, Http::ResponseWriter response) {
