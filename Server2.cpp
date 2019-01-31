@@ -296,10 +296,27 @@ private:
         */
         
         
+        vector<SharedDataContainer> dataContainers = generateTestContainer();
+        
+        rapidjson::StringBuffer buffera = vectorToJson(dataContainers); 
         
         
+           
         
-        /*
+    
+        
+        response.send(Http::Code::Ok, buffera.GetString());
+        //***************************************************************************************************
+        //END OF read large set and Send back
+
+   
+    }
+
+    void creditAccount(const Rest::Request&, Http::ResponseWriter response) {
+        response.send(Http::Code::Ok, "The bank is closed, come back later");
+    }
+    
+    vector<SharedDataContainer> generateTestContainer(){
         //test with larger set
         std::vector<SharedDataContainer> dataContainers;
         
@@ -315,6 +332,11 @@ private:
         dataContainers.back().AddSharedData(SharedData(10000, "max"));
         dataContainers.back().AddSharedData(SharedData(1, "iteration"));
         
+        return dataContainers;
+    
+    }
+    
+    rapidjson::StringBuffer vectorToJson(vector<SharedDataContainer> dataContainers){
         rapidjson::StringBuffer buffera;
         rapidjson::Writer<rapidjson::StringBuffer> writera(buffera);
         
@@ -323,21 +345,12 @@ private:
         sharedDataItr->Serialize(writera);
         writera.EndArray();
         
-        
-        
-        response.send(Http::Code::Ok, buffera.GetString());
-         */
-              
-        /*
-        // turn back to json string
-        rapidjson::StringBuffer buffer;
-        rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
-        d.Accept(writer);
-        
-        response.send(Http::Code::Ok, buffer.GetString());
-        */
-        
-        //***************************************************************************************************
+        return buffera;
+    
+    }
+    
+    vector<SharedDataContainer> jsonToVector(rapidjson::Document d){
+    //***************************************************************************************************
         //read large set and Send back
         rapidjson::Value& a = d;
 
@@ -393,27 +406,9 @@ private:
                         }                      	
     		}
 	}
-        //cout << "\nFinaly " << dataContainers.at(0).getSharedDatas().at(0).getValue() << " with a value of " << dataContainers.at(0).getSharedDatas().at(0).getNum() << endl;
-        rapidjson::StringBuffer buffera;
-        rapidjson::Writer<rapidjson::StringBuffer> writera(buffera);
-        
-        writera.StartArray();
-        for (std::vector<SharedDataContainer>::const_iterator sharedDataItr = dataContainers.begin(); sharedDataItr != dataContainers.end(); ++sharedDataItr)
-        sharedDataItr->Serialize(writera);
-        writera.EndArray();
-        
+        return dataContainers; 
+    }
     
-        
-        response.send(Http::Code::Ok, buffera.GetString());
-        //***************************************************************************************************
-        //END OF read large set and Send back
-
-   
-    }
-
-    void creditAccount(const Rest::Request&, Http::ResponseWriter response) {
-        response.send(Http::Code::Ok, "The bank is closed, come back later");
-    }
 
     std::shared_ptr<Http::Endpoint> httpEndpoint;
     Rest::Description desc;
