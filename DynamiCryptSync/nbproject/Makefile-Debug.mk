@@ -52,7 +52,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L/usr/lib -lpthread
+LDLIBSOPTIONS=-L/usr/lib -lpthread -lboost_thread
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}

@@ -41,6 +41,7 @@
           </linkerAddLib>
           <linkerLibItems>
             <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
+            <linkerOptionItem>-lboost_thread</linkerOptionItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>
