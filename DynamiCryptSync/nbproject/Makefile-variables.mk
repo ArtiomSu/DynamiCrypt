@@ -9,19 +9,19 @@ CND_DISTDIR=dist
 # Debug configuration
 CND_PLATFORM_Debug=GNU-Linux
 CND_ARTIFACT_DIR_Debug=dist/Debug/GNU-Linux
-CND_ARTIFACT_NAME_Debug=dynamicrypt
-CND_ARTIFACT_PATH_Debug=dist/Debug/GNU-Linux/dynamicrypt
+CND_ARTIFACT_NAME_Debug=dynamicryptsync
+CND_ARTIFACT_PATH_Debug=dist/Debug/GNU-Linux/dynamicryptsync
 CND_PACKAGE_DIR_Debug=dist/Debug/GNU-Linux/package
-CND_PACKAGE_NAME_Debug=dynamicrypt.tar
-CND_PACKAGE_PATH_Debug=dist/Debug/GNU-Linux/package/dynamicrypt.tar
+CND_PACKAGE_NAME_Debug=dynamicryptsync.tar
+CND_PACKAGE_PATH_Debug=dist/Debug/GNU-Linux/package/dynamicryptsync.tar
 # Release configuration
 CND_PLATFORM_Release=GNU-Linux
 CND_ARTIFACT_DIR_Release=dist/Release/GNU-Linux
-CND_ARTIFACT_NAME_Release=dynamicrypt
-CND_ARTIFACT_PATH_Release=dist/Release/GNU-Linux/dynamicrypt
+CND_ARTIFACT_NAME_Release=dynamicryptsync
+CND_ARTIFACT_PATH_Release=dist/Release/GNU-Linux/dynamicryptsync
 CND_PACKAGE_DIR_Release=dist/Release/GNU-Linux/package
-CND_PACKAGE_NAME_Release=dynamicrypt.tar
-CND_PACKAGE_PATH_Release=dist/Release/GNU-Linux/package/dynamicrypt.tar
+CND_PACKAGE_NAME_Release=dynamicryptsync.tar
+CND_PACKAGE_PATH_Release=dist/Release/GNU-Linux/package/dynamicryptsync.tar
 #
 # include compiler specific variables
 #
