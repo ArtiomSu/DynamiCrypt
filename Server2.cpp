@@ -296,7 +296,9 @@ private:
         */
         
         
-        vector<SharedDataContainer> dataContainers = generateTestContainer();
+        //vector<SharedDataContainer> dataContainers = generateTestContainer();
+        
+        vector<SharedDataContainer> dataContainers = jsonToVector(&d);
         
         rapidjson::StringBuffer buffera = vectorToJson(dataContainers); 
         
@@ -349,10 +351,10 @@ private:
     
     }
     
-    vector<SharedDataContainer> jsonToVector(rapidjson::Document d){
+    vector<SharedDataContainer> jsonToVector(rapidjson::Document *d){
     //***************************************************************************************************
         //read large set and Send back
-        rapidjson::Value& a = d;
+        rapidjson::Value& a = *d;
 
 	static const char* kTypeNames[] = { "Null", "False", "True", "Object", "Array", "String", "Number" };
 
