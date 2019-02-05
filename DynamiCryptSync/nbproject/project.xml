@@ -24,5 +24,10 @@
                 <project-formatting-style>false</project-formatting-style>
             </formatting>
         </data>
+        <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
+            <word>asio</word>
+            <word>placeholders</word>
+            <word>tcp</word>
+        </spellchecker-wordlist>
     </configuration>
 </project>
