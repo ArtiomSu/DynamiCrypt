@@ -810,6 +810,7 @@ void example_6c(){
 // end of solution to problem stated above using strand ####################################
 
 
+
 int main(int argc, char** argv) {
     //boost::asio::io_context io; // uncomment for timer and tcpdaytime
     //TimerSyncronisly(&io);
@@ -831,9 +832,10 @@ int main(int argc, char** argv) {
     //example_5c();
     //example_6a();
     //example_6b();
-    example_6c();
+    //example_6c();
     
     
+    // continue totorial in a different file   
     
     
     return 0;

@@ -35,7 +35,8 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/main.o
+	${OBJECTDIR}/main.o \
+	${OBJECTDIR}/netowkingContinued.o
 
 
 # C Compiler Flags
@@ -52,7 +53,7 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-L/usr/lib -lpthread -lboost_thread
+LDLIBSOPTIONS=-L/usr/lib -L. -lpthread -lboost_thread
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -66,6 +67,11 @@ ${OBJECTDIR}/main.o: main.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
+
+${OBJECTDIR}/netowkingContinued.o: netowkingContinued.cpp
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/netowkingContinued.o netowkingContinued.cpp
 
 # Subprojects
 .build-subprojects:

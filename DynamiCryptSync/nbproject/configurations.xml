@@ -13,6 +13,7 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>main.cpp</itemPath>
+      <itemPath>netowkingContinued.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -38,6 +39,7 @@
         <linkerTool>
           <linkerAddLib>
             <pElem>/usr/lib</pElem>
+            <pElem>.</pElem>
           </linkerAddLib>
           <linkerLibItems>
             <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
@@ -46,6 +48,8 @@
         </linkerTool>
       </compileType>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="netowkingContinued.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
     <conf name="Release" type="1">
@@ -69,6 +73,8 @@
         </asmTool>
       </compileType>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="netowkingContinued.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
   </confs>
