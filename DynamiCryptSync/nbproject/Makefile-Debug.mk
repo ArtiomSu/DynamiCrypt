@@ -38,6 +38,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/bookEcho/Echo1.o \
 	${OBJECTDIR}/bookEcho/clientAsync.o \
 	${OBJECTDIR}/bookEcho/echoServerSync.o \
+	${OBJECTDIR}/bookEcho/seriousClientAndServer/async/client-using-co-routines.o \
 	${OBJECTDIR}/bookEcho/seriousClientAndServer/async/client.o \
 	${OBJECTDIR}/bookEcho/seriousClientAndServer/async/server.o \
 	${OBJECTDIR}/bookEcho/seriousClientAndServer/clientSync.o \
@@ -87,6 +88,11 @@ ${OBJECTDIR}/bookEcho/echoServerSync.o: bookEcho/echoServerSync.cpp
 	${MKDIR} -p ${OBJECTDIR}/bookEcho
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/bookEcho/echoServerSync.o bookEcho/echoServerSync.cpp
+
+${OBJECTDIR}/bookEcho/seriousClientAndServer/async/client-using-co-routines.o: bookEcho/seriousClientAndServer/async/client-using-co-routines.cpp
+	${MKDIR} -p ${OBJECTDIR}/bookEcho/seriousClientAndServer/async
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/bookEcho/seriousClientAndServer/async/client-using-co-routines.o bookEcho/seriousClientAndServer/async/client-using-co-routines.cpp
 
 ${OBJECTDIR}/bookEcho/seriousClientAndServer/async/client.o: bookEcho/seriousClientAndServer/async/client.cpp
 	${MKDIR} -p ${OBJECTDIR}/bookEcho/seriousClientAndServer/async

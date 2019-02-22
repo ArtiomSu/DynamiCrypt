@@ -4,6 +4,8 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>bookEcho/seriousClientAndServer/async/coroutine.hpp</itemPath>
+      <itemPath>bookEcho/seriousClientAndServer/async/yield.hpp</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -13,6 +15,7 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>bookEcho/Echo1.cpp</itemPath>
+      <itemPath>bookEcho/seriousClientAndServer/async/client-using-co-routines.cpp</itemPath>
       <itemPath>bookEcho/seriousClientAndServer/test/client.cpp</itemPath>
       <itemPath>bookEcho/seriousClientAndServer/async/client.cpp</itemPath>
       <itemPath>bookEcho/clientAsync.cpp</itemPath>
@@ -63,14 +66,29 @@
       </item>
       <item path="bookEcho/echoServerSync.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="bookEcho/seriousClientAndServer/async/client-using-co-routines.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
       <item path="bookEcho/seriousClientAndServer/async/client.cpp"
             ex="false"
             tool="1"
             flavor2="0">
       </item>
+      <item path="bookEcho/seriousClientAndServer/async/coroutine.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="bookEcho/seriousClientAndServer/async/server.cpp"
             ex="false"
             tool="1"
+            flavor2="0">
+      </item>
+      <item path="bookEcho/seriousClientAndServer/async/yield.hpp"
+            ex="false"
+            tool="3"
             flavor2="0">
       </item>
       <item path="bookEcho/seriousClientAndServer/clientSync.cpp"
@@ -126,14 +144,29 @@
       </item>
       <item path="bookEcho/echoServerSync.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="bookEcho/seriousClientAndServer/async/client-using-co-routines.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
       <item path="bookEcho/seriousClientAndServer/async/client.cpp"
             ex="false"
             tool="1"
             flavor2="0">
       </item>
+      <item path="bookEcho/seriousClientAndServer/async/coroutine.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="bookEcho/seriousClientAndServer/async/server.cpp"
             ex="false"
             tool="1"
+            flavor2="0">
+      </item>
+      <item path="bookEcho/seriousClientAndServer/async/yield.hpp"
+            ex="false"
+            tool="3"
             flavor2="0">
       </item>
       <item path="bookEcho/seriousClientAndServer/clientSync.cpp"
