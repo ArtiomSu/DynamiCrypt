@@ -197,6 +197,7 @@ void handle_accept(talk_to_client::ptr client, const boost::system::error_code &
 }
 
 
+/* single thread server
 int main(int argc, char* argv[]) {
     talk_to_client::ptr client = talk_to_client::new_();
     std::cout << "test" << std::endl;
@@ -204,3 +205,46 @@ int main(int argc, char* argv[]) {
     std::cout << "test2" << std::endl;
     service.run();
 }
+ */
+
+
+// multi threaded server bellow
+
+/*
+once you go multi-threaded, you will have to think about thread safety.
+Even though you call async_* in thread A, its completion routine can be called in
+thread B (as long as thread B has called service.run() ). That is not a problem in
+itself. As long as you follow the logical flow, that is, from async_read() to on_read(), 
+from on_read() to process_request , from process_request to async_write() ,
+from async_write() to on_write() , from on_write() to async_read() ,
+and there are no public functions that are called on your talk_to_client class,
+even though different functions can be called on different threads, they will still
+be called in sequential order. Thus, no need for mutexes.
+ 
+This, however, means that for a client, there can be only one asynchronous operation
+pending. If at some point, for a client, we have two pending asynchronous functions,
+you'll need mutexes. This is because the two pending operations might finish
+roughly at the same time, and we could end up having their completion handlers
+called simultaneously on two different threads. Therefore, there is a need for thread
+safety, and thus, mutexes.
+ */
+
+boost::thread_group threads;
+
+void listen_thread() {
+    service.run();
+}
+
+void start_listen(int thread_count) {
+    for ( int i = 0; i < thread_count; ++i)
+        threads.create_thread( listen_thread);
+}
+
+
+int main(int argc, char* argv[]) {
+    talk_to_client::ptr client = talk_to_client::new_();
+    acceptor.async_accept(client->sock(), boost::bind(handle_accept,client,_1));
+    start_listen(4);
+    threads.join_all();
+}
+
