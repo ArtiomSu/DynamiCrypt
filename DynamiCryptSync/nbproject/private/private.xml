@@ -7,12 +7,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/mnt/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/test/TCP_server___client/async_server.cpp</file>
-            <file>file:/mnt/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/Makefile</file>
-            <file>file:/mnt/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/test/TCP_server___client/client.cpp</file>
-            <file>file:/mnt/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/test/TCP_server___client/server.cpp</file>
-            <file>file:/mnt/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/main.cpp</file>
-            <file>file:/mnt/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/netowkingContinued.cpp</file>
+            <file>file:/mnt/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/bookEcho/seriousClientAndServer/async/client.cpp</file>
+            <file>file:/mnt/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/bookEcho/seriousClientAndServer/test/server.cpp</file>
+            <file>file:/mnt/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/bookEcho/seriousClientAndServer/clientSync.cpp</file>
+            <file>file:/mnt/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/bookEcho/seriousClientAndServer/serverSync.cpp</file>
+            <file>file:/mnt/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/bookEcho/seriousClientAndServer/async/server.cpp</file>
+            <file>file:/mnt/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/bookEcho/seriousClientAndServer/test/client.cpp</file>
         </group>
     </open-files>
 </project-private>

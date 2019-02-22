@@ -12,8 +12,18 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <itemPath>bookEcho/Echo1.cpp</itemPath>
+      <itemPath>bookEcho/seriousClientAndServer/test/client.cpp</itemPath>
+      <itemPath>bookEcho/seriousClientAndServer/async/client.cpp</itemPath>
+      <itemPath>bookEcho/clientAsync.cpp</itemPath>
+      <itemPath>bookEcho/seriousClientAndServer/clientSync.cpp</itemPath>
+      <itemPath>bookEcho/echoServerSync.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
       <itemPath>netowkingContinued.cpp</itemPath>
+      <itemPath>bookEcho/seriousClientAndServer/test/server.cpp</itemPath>
+      <itemPath>bookEcho/seriousClientAndServer/async/server.cpp</itemPath>
+      <itemPath>bookEcho/serverAsync.cpp</itemPath>
+      <itemPath>bookEcho/seriousClientAndServer/serverSync.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -47,6 +57,44 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
+      <item path="bookEcho/Echo1.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="bookEcho/clientAsync.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="bookEcho/echoServerSync.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="bookEcho/seriousClientAndServer/async/client.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="bookEcho/seriousClientAndServer/async/server.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="bookEcho/seriousClientAndServer/clientSync.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="bookEcho/seriousClientAndServer/serverSync.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="bookEcho/seriousClientAndServer/test/client.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="bookEcho/seriousClientAndServer/test/server.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="bookEcho/serverAsync.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="netowkingContinued.cpp" ex="false" tool="1" flavor2="0">
@@ -72,6 +120,44 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
+      <item path="bookEcho/Echo1.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="bookEcho/clientAsync.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="bookEcho/echoServerSync.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="bookEcho/seriousClientAndServer/async/client.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="bookEcho/seriousClientAndServer/async/server.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="bookEcho/seriousClientAndServer/clientSync.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="bookEcho/seriousClientAndServer/serverSync.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="bookEcho/seriousClientAndServer/test/client.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="bookEcho/seriousClientAndServer/test/server.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="bookEcho/serverAsync.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="netowkingContinued.cpp" ex="false" tool="1" flavor2="0">
