@@ -3,7 +3,9 @@
 #include <boost/array.hpp>
 #include <ctime>
 #include <boost/asio.hpp>
+#include <boost/thread/mutex.hpp>
 #include <boost/thread/thread.hpp>
+//#include <boost/thread.hpp>  // ? better one?
 #include <boost/lexical_cast.hpp>
 #include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
@@ -22,6 +24,7 @@ io_service service;
 class talk_to_client;
 typedef std::vector<boost::shared_ptr<talk_to_client>> array; // array of shared pointers to talk_to_client class
 array clients;
+boost::recursive_mutex clients_cs;
 
 int ping_count = 0;
 
@@ -50,9 +53,12 @@ public:
     typedef boost::shared_ptr<talk_to_client> ptr;
     
     void start() {
-        started_ = true;
+        { boost::recursive_mutex::scoped_lock lk(clients_cs);
         clients.push_back( shared_from_this());
-        last_ping = boost::posix_time::microsec_clock::local_time();
+        }
+        //boost::recursive_mutex::scoped_lock lk(cs_);
+        started_ = true;
+        last_ping_ = boost::posix_time::microsec_clock::local_time();
         // first, we wait for client to login
         do_read();
     }
@@ -63,28 +69,47 @@ public:
     }
     
     void stop() {
+        { boost::recursive_mutex::scoped_lock lk(cs_);
         if ( !started_) return;
         started_ = false;
         sock_.close();
+        }
 
+        
         boost::shared_ptr<talk_to_client> self = shared_from_this();
+        { boost::recursive_mutex::scoped_lock lk(clients_cs);
         array::iterator it = std::find(clients.begin(), clients.end(), self);
         clients.erase(it);
+        }
         update_clients_changed();
     }
     
-    bool started() const { return started_; }
+    bool started() const { 
+       // boost::recursive_mutex::scoped_lock lk(cs_);
+        return started_; 
+    }
     
-    ip::tcp::socket & sock() { return sock_;}
+    ip::tcp::socket & sock() { 
+       // boost::recursive_mutex::scoped_lock lk(cs_);
+        return sock_;
+    }
 
-    std::string username() const { return username_; }
+    std::string username() const { 
+       // boost::recursive_mutex::scoped_lock lk(cs_);
+        return username_; 
+    }
     
-    void set_clients_changed() { clients_changed_ = true; }
+    void set_clients_changed() { 
+       // boost::recursive_mutex::scoped_lock lk(cs_);
+        clients_changed_ = true; 
+    }
     
 private:
     void on_read(const error_code & err, size_t bytes) {
         if ( err) stop();
         if ( !started() ) return;
+        
+        boost::recursive_mutex::scoped_lock lk(cs_);
         // process the msg
         std::string msg(read_buffer_, bytes);
         if ( msg.find("login ") == 0){
@@ -100,6 +125,7 @@ private:
     }
     
     void on_login(const std::string & msg) {
+       // boost::recursive_mutex::scoped_lock lk(cs_);
         std::istringstream in(msg);
         in >> username_ >> username_;
         std::cout << username_ << " logged in" << std::endl;
@@ -108,6 +134,7 @@ private:
     }
     
     void on_ping() {
+       // boost::recursive_mutex::scoped_lock lk(cs_);
         std::cout << "ping gotten " << ping_count << std::endl;
         ping_count++;
         do_write(clients_changed_ ? "ping client_list_changed\n" : "ping ok\n");
@@ -115,8 +142,12 @@ private:
     }
     
     void on_clients() {
+        array copy;
+        { boost::recursive_mutex::scoped_lock lk(clients_cs);
+          copy = clients;
+        }
         std::string msg;
-        for( array::const_iterator b = clients.begin(), e = clients.end() ; b != e; ++b){
+        for( array::const_iterator b = copy.begin(), e = copy.end() ; b != e; ++b){
             msg += (*b)->username() + " ";
         }
         do_write("clients " + msg + "\n");
@@ -131,15 +162,17 @@ private:
     }
 
     void on_check_ping() {
+       // boost::recursive_mutex::scoped_lock lk(cs_);
         boost::posix_time::ptime now = boost::posix_time::microsec_clock::local_time();
-        if ( (now - last_ping).total_milliseconds() > 5000) {
+        if ( (now - last_ping_).total_milliseconds() > 5000) {
             std::cout << "stopping " << username_ << " - no ping in time" << std::endl;
             stop();
         }
-        last_ping = boost::posix_time::microsec_clock::local_time();
+        last_ping_ = boost::posix_time::microsec_clock::local_time();
     }
     
     void post_check_ping() {
+        boost::recursive_mutex::scoped_lock lk(cs_);
         timer_.expires_from_now(boost::posix_time::millisec(5000));
         timer_.async_wait( MEM_FN(on_check_ping));
     }
@@ -156,6 +189,7 @@ private:
     
     void do_write(const std::string & msg) {
         if ( !started() ) return;
+       // boost::recursive_mutex::scoped_lock lk(cs_);
         std::copy(msg.begin(), msg.end(), write_buffer_);
         sock_.async_write_some( buffer(write_buffer_, msg.size()), MEM_FN2(on_write,_1,_2));
     }
@@ -168,6 +202,7 @@ private:
     }
     
 private:
+    mutable boost::recursive_mutex cs_;
     ip::tcp::socket sock_;
     enum { max_msg = 1024 };
     char read_buffer_[max_msg];
@@ -175,12 +210,16 @@ private:
     bool started_;
     std::string username_;
     deadline_timer timer_;
-    boost::posix_time::ptime last_ping;
+    boost::posix_time::ptime last_ping_;
     bool clients_changed_;
 };
 
 void update_clients_changed() {
-    for( array::iterator b = clients.begin(), e = clients.end(); b != e; ++b){
+    array copy;
+    { boost::recursive_mutex::scoped_lock lk(clients_cs);
+      copy = clients;
+    }
+    for( array::iterator b = copy.begin(), e = copy.end(); b != e; ++b){
         (*b)->set_clients_changed();
     }
 }
