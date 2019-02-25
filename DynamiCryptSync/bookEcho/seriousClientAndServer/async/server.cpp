@@ -23,7 +23,7 @@ io_service service;
 
 class talk_to_client;
 typedef std::vector<boost::shared_ptr<talk_to_client>> array; // array of shared pointers to talk_to_client class
-array clients;
+array peers;
 boost::recursive_mutex clients_cs;
 
 int ping_count = 0;
@@ -33,7 +33,7 @@ int ping_count = 0;
 #define MEM_FN2(x,y,z)  boost::bind(&self_type::x, shared_from_this(),y,z)
 
 
-void update_clients_changed();
+void update_peers_changed();
 
 /** simple connection to server:
     - logs in just with username (no password)
@@ -54,7 +54,7 @@ public:
     
     void start() {
         { boost::recursive_mutex::scoped_lock lk(clients_cs);
-        clients.push_back( shared_from_this());
+        peers.push_back( shared_from_this());
         }
         //boost::recursive_mutex::scoped_lock lk(cs_);
         started_ = true;
@@ -78,10 +78,10 @@ public:
         
         boost::shared_ptr<talk_to_client> self = shared_from_this();
         { boost::recursive_mutex::scoped_lock lk(clients_cs);
-        array::iterator it = std::find(clients.begin(), clients.end(), self);
-        clients.erase(it);
+        array::iterator it = std::find(peers.begin(), peers.end(), self);
+        peers.erase(it);
         }
-        update_clients_changed();
+        update_peers_changed();
     }
     
     bool started() const { 
@@ -130,7 +130,7 @@ private:
         in >> username_ >> username_;
         std::cout << username_ << " logged in" << std::endl;
         do_write("login ok\n");
-        update_clients_changed();
+        update_peers_changed();
     }
     
     void on_ping() {
@@ -144,7 +144,7 @@ private:
     void on_clients() {
         array copy;
         { boost::recursive_mutex::scoped_lock lk(clients_cs);
-          copy = clients;
+          copy = peers;
         }
         std::string msg;
         for( array::const_iterator b = copy.begin(), e = copy.end() ; b != e; ++b){
@@ -214,10 +214,10 @@ private:
     bool clients_changed_;
 };
 
-void update_clients_changed() {
+void update_peers_changed() {
     array copy;
     { boost::recursive_mutex::scoped_lock lk(clients_cs);
-      copy = clients;
+      copy = peers;
     }
     for( array::iterator b = copy.begin(), e = copy.end(); b != e; ++b){
         (*b)->set_clients_changed();

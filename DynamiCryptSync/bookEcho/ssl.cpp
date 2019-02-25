@@ -15,7 +15,7 @@
 
 /*
     compile using this
-    g++ ssl.cpp -lboost_system -lpthread -lcrypto -lssl -o ssl
+    g++ ssl.cpp -lboost_system -lpthread -lboost_thread  -lcrypto -lssl -o ssl
 
 */
 

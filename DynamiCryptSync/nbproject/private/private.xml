@@ -9,6 +9,7 @@
         <group>
             <file>file:/mnt/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/bookEcho/seriousClientAndServer/async/client.cpp</file>
             <file>file:/mnt/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/bookEcho/seriousClientAndServer/test/server.cpp</file>
+            <file>file:/mnt/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/bookEcho/seriousClientAndServer/async/client-using-co-routines.cpp</file>
             <file>file:/mnt/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/bookEcho/seriousClientAndServer/clientSync.cpp</file>
             <file>file:/mnt/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/bookEcho/seriousClientAndServer/serverSync.cpp</file>
             <file>file:/mnt/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/bookEcho/seriousClientAndServer/async/server.cpp</file>

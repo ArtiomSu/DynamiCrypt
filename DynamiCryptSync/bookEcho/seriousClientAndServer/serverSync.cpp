@@ -27,13 +27,13 @@ or have the talk_to_client instance hold a the socket by value,
 and have an array of shared pointers to talk_to_client . I chose the latter, but you
 can go either way
 */ 
-struct talk_to_client;
-typedef boost::shared_ptr<talk_to_client> client_ptr;
+struct peer;
+typedef boost::shared_ptr<peer> client_ptr;
 typedef std::vector<client_ptr> array;
-array clients;
+array peers;
 boost::recursive_mutex cs; // thread-safe access to clients array
 
-void update_clients_changed();
+void update_peers_changed();
 /*
 The synchronous server is quite simple as well. It needs two threads, one for
 listening to new clients and one for processing existing clients. It cannot use a single
@@ -41,7 +41,7 @@ thread; waiting for a new client is a blocking operation, thus, we need an extra
 thread to handle the existing clients.
  */
 
-struct talk_to_client : boost::enable_shared_from_this<talk_to_client> {
+struct talk_to_client : boost::enable_shared_from_this<peer> {
     
     talk_to_client() : sock_(service), started_(false), already_read_(0) {
 		last_ping = boost::posix_time::microsec_clock::local_time();
@@ -113,7 +113,7 @@ struct talk_to_client : boost::enable_shared_from_this<talk_to_client> {
         std::cout << username_ << " logged in" << std::endl;
         std::string s = "login ok\n";
         write(s);
-        update_clients_changed();
+        update_peers_changed();
     }
     
     void on_ping() {
@@ -124,7 +124,7 @@ struct talk_to_client : boost::enable_shared_from_this<talk_to_client> {
     void on_clients() {
         std::string msg;
         { boost::recursive_mutex::scoped_lock lk(cs);
-            for( array::const_iterator b = clients.begin(), e = clients.end(); b != e; ++b)
+            for( array::const_iterator b = peers.begin(), e = peers.end(); b != e; ++b)
                 msg += (*b)->username() + " ";
         }
         write("clients " + msg + "\n");
@@ -145,10 +145,10 @@ struct talk_to_client : boost::enable_shared_from_this<talk_to_client> {
 };
 
 
-void update_clients_changed() {
+void update_peers_changed() {
 	boost::recursive_mutex::scoped_lock lk(cs);
-	for (array::iterator b = clients.begin(), e = clients.end(); b != e; ++b)
-		(*b)->set_clients_changed();
+	for (array::iterator b = peers.begin(), e = peers.end(); b != e; ++b)
+		(*b)->set_peers_changed();
 }
 
 
@@ -156,10 +156,10 @@ void update_clients_changed() {
 void accept_thread() {
     ip::tcp::acceptor acceptor(service, ip::tcp::endpoint(ip::tcp::v4(), 8001));
     while ( true) {
-        client_ptr new_( new talk_to_client);
+        client_ptr new_( new peer);
         acceptor.accept(new_->sock());
         boost::recursive_mutex::scoped_lock lk(cs);
-        clients.push_back(new_);
+        peers.push_back(new_);
     }
 }
 
@@ -168,10 +168,10 @@ void handle_clients_thread() {
     while ( true) {
         boost::this_thread::sleep( boost::posix_time::millisec(1));
         boost::recursive_mutex::scoped_lock lk(cs);
-        for(array::iterator b = clients.begin(),e = clients.end(); b != e; ++b)
+        for(array::iterator b = peers.begin(),e = peers.end(); b != e; ++b)
             (*b)->answer_to_client();
         // erase clients that timed out
-        clients.erase(std::remove_if(clients.begin(), clients.end(), boost::bind(&talk_to_client::timed_out,_1)), clients.end());
+        peers.erase(std::remove_if(peers.begin(), peers.end(), boost::bind(&peer::timed_out,_1)), peers.end());
     }
 }
 

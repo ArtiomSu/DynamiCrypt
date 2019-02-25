@@ -25,11 +25,11 @@ io_service service;
 struct talk_to_client;
 typedef boost::shared_ptr<talk_to_client> client_ptr;
 typedef std::vector<client_ptr> array;
-array clients;
+array peers;
 // thread-safe access to clients array
 boost::recursive_mutex cs;
 
-void update_clients_changed() ;
+void update_peers_changed() ;
 
 /** simple connection to server:
     - logs in just with username (no password)
@@ -100,7 +100,7 @@ private:
         in >> username_ >> username_;
         std::cout << username_ << " logged in" << std::endl;
         write("login ok\n");
-        update_clients_changed();
+        update_peers_changed();
     }
     void on_ping() {
         write(clients_changed_ ? "ping client_list_changed\n" : "ping ok\n");
@@ -109,7 +109,7 @@ private:
     void on_clients() {
         std::string msg;
         { boost::recursive_mutex::scoped_lock lk(cs);
-          for( array::const_iterator b = clients.begin(), e = clients.end() ; b != e; ++b)
+          for( array::const_iterator b = peers.begin(), e = peers.end() ; b != e; ++b)
             msg += (*b)->username() + " ";
         }
         write("clients " + msg + "\n");
@@ -130,9 +130,9 @@ private:
     ptime last_ping;
 };
 
-void update_clients_changed() {
+void update_peers_changed() {
     boost::recursive_mutex::scoped_lock lk(cs);
-    for( array::iterator b = clients.begin(), e = clients.end(); b != e; ++b)
+    for( array::iterator b = peers.begin(), e = peers.end(); b != e; ++b)
         (*b)->set_clients_changed();
 }
 
@@ -145,7 +145,7 @@ void accept_thread() {
         acceptor.accept(new_->sock());
         
         boost::recursive_mutex::scoped_lock lk(cs);
-        clients.push_back(new_);
+        peers.push_back(new_);
     }
 }
 
@@ -153,11 +153,11 @@ void handle_clients_thread() {
     while ( true) {
         boost::this_thread::sleep( millisec(1));
         boost::recursive_mutex::scoped_lock lk(cs);
-        for ( array::iterator b = clients.begin(), e = clients.end(); b != e; ++b) 
+        for ( array::iterator b = peers.begin(), e = peers.end(); b != e; ++b) 
             (*b)->answer_to_client();
         // erase clients that timed out
-        clients.erase(std::remove_if(clients.begin(), clients.end(), 
-                   boost::bind(&talk_to_client::timed_out,_1)), clients.end());
+        peers.erase(std::remove_if(peers.begin(), peers.end(), 
+                   boost::bind(&talk_to_client::timed_out,_1)), peers.end());
     }
 }
 

@@ -22,6 +22,7 @@
       <itemPath>bookEcho/seriousClientAndServer/clientSync.cpp</itemPath>
       <itemPath>bookEcho/echoServerSync.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
+      <itemPath>mainIsh/main.cpp</itemPath>
       <itemPath>netowkingContinued.cpp</itemPath>
       <itemPath>bookEcho/seriousClientAndServer/test/server.cpp</itemPath>
       <itemPath>bookEcho/seriousClientAndServer/async/server.cpp</itemPath>
@@ -115,6 +116,8 @@
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="mainIsh/main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="netowkingContinued.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
@@ -192,6 +195,8 @@
       <item path="bookEcho/serverAsync.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="mainIsh/main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="netowkingContinued.cpp" ex="false" tool="1" flavor2="0">
       </item>
