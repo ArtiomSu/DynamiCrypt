@@ -61,11 +61,9 @@ public:
     }
     
     int set_partner(int id){
-        if(partner_tpm != 0){
-            partner_tpm = id;
-            return 1;
-        }
-        return 0;
+        partner_tpm = id;
+        
+        return 1;
     }
     
     int partner(){
@@ -80,6 +78,17 @@ private:
     
 };
 
+/*
+class tpm_network_handler{
+
+    
+    
+    
+private:
+    
+    
+}
+*/
 
 class peer : public boost::enable_shared_from_this<peer>, boost::noncopyable {
     typedef peer self_type;
@@ -105,9 +114,6 @@ public:
             
         } else { // this will listen to connection so read.
         //boost::recursive_mutex::scoped_lock lk(cs_);
-        
-        last_ping_ = boost::posix_time::microsec_clock::local_time();
-        // first, we wait for client to login
         do_read();
         }
     }
@@ -162,21 +168,7 @@ public:
     
 private:
     
-    void on_connect(const error_code & err) {
-        
-        tpms.push_back(single_tpm_network_handler(1234, 5000));
-        
-        
-        if ( !err){      
-            std::stringstream ss;
-            ss << "2\t" << tpms.back().id() << "\t" << tpms.back().iteration() << "\n";
-            do_write(ss.str());
-        }
-        else{
-            std::cout << "Error on_connect:" << err.message() << std::endl;
-            stop();
-        }
-    }
+    
     
     void on_read(const error_code & err, size_t bytes) {
         if ( err) stop();
@@ -194,89 +186,60 @@ private:
         // partner id \t partners iteration
         if(std::stoi(parsed_msg.at(0)) == 1){ // message type 1;
             std::cout << "message type 1 received" << "with partner id of " << parsed_msg.at(1) << " and iteration " << parsed_msg.at(2) <<  std::endl;
-                bool tpm_found = false;
-            int tpm_index = -1;
-            for(int i=0; i < tpms.size(); i++){
-                if(tpms.at(i).partner() == std::stoi(parsed_msg.at(1))){
-
-                    tpms.at(i).iteration_increase();
-                    tpm_found = true;
-                    tpm_index = i;
-                    break;
-                }
-            }
-            if(tpm_found){
-                std::stringstream ss;
-                ss << "1\t" << tpms.at(tpm_index).id() << "\t" << tpms.at(tpm_index).iteration() << "\n";
-                std::cout << ss.str() << std::endl;
-                do_write(ss.str());
-            } else{ // must be new machine? but shouldnt be
-
-                std::cout << "on_sync no tpm found" << std::endl;
-
-            }
+            on_sync(parsed_msg);
         } 
         // init tree parity machines
         else if(std::stoi(parsed_msg.at(0)) == 2){
             std::cout << "message type 2 received" << "with partner id of " << parsed_msg.at(1) << " and iteration " << parsed_msg.at(2) <<  std::endl;
-                srand(123456789); // consistend messages
-
-
-
-            tpms.push_back(single_tpm_network_handler(rand()%5000, 5000));
-            // NB should make sure this id is unique -- will do later
-
-
-            tpms.back().set_partner(std::stoi(parsed_msg.at(1)));
-
-            std::stringstream ss;
-            ss << "3\t" << tpms.back().id() << "\t" << tpms.back().iteration() << "\t" << tpms.back().partner() << "\n";
-            std::cout << "on_init: " << ss.str() << std::endl;
-            do_write(ss.str());
+            on_init(parsed_msg);
         }
         // link inited tree parity machines
         else if(std::stoi(parsed_msg.at(0)) == 3){
             std::cout << "message type 3 received" << "with partner id of " << parsed_msg.at(1) << " and iteration " << parsed_msg.at(2) << " and self id of " <<  parsed_msg.at(3) << std::endl;
-            bool tpm_found = false;
-            int tpm_index = -1;
-
-
-
-            for(int i=0; i < tpms.size(); i++){
-                if(tpms.at(i).id() == std::stoi(parsed_msg.at(3))){
-                    tpms.at(i).set_partner(std::stoi(parsed_msg.at(2)));
-                    tpms.at(i).iteration_increase();
-                    tpm_found = true;
-                    tpm_index = i;
-                    break;
-                }
-            }
-            if(tpm_found){
-                std::stringstream ss;
-                ss << "1\t" << tpms.at(tpm_index).id() << "\t" << tpms.at(tpm_index).iteration() << "\n";
-                std::cout << ss.str() << std::endl;
-                do_write(ss.str());
-            }
-            else{ // something is not right
-
-                std::cout << "on_linking no tpm found" << std::endl;
-
-            }
+            on_linking(parsed_msg);
         }
         
         
-        /*
-        if ( msg.find("login ") == 0){
-            on_login(msg);
-        }
-        else if ( msg.find("ping") == 0){
-            on_ping();
-        }
-        else if ( msg.find("ask_clients") == 0){
-            on_clients();
-        }*/
         else std::cerr << "invalid msg " << msg << std::endl;
          
+    }
+    
+    void on_connect(const error_code & err) {
+        
+        tpms.push_back(single_tpm_network_handler(1234, 5000));
+        
+        
+        if ( !err){      
+            std::stringstream ss;
+            ss << "2\t" << tpms.back().id() << "\t" << tpms.back().iteration() << "\n";
+            std::cout << "on_connect: " << ss.str() << std::endl;
+            do_write(ss.str());
+        }
+        else{
+            std::cout << "Error on_connect:" << err.message() << std::endl;
+            stop();
+        }
+    }
+    
+    void on_init(std::vector<std::string> & parsed_msg){
+        
+        srand(123456789); // consistend messages
+        
+        
+        
+        tpms.push_back(single_tpm_network_handler(rand()%5000, 5000));
+        int index = tpms.size()-1;
+        // NB should make sure this id is unique -- will do later
+        
+        
+        tpms[index].set_partner(std::stoi(parsed_msg.at(1)));
+        
+        
+        std::stringstream ss;
+        ss << "3\t" << tpms[index].id() << "\t" << tpms[index].iteration() << "\t" << tpms[index].partner() << "\n";
+        std::cout << std::stoi(parsed_msg.at(1)) << ";" << parsed_msg.at(1) << " on_init: " << ss.str() << std::endl;
+        do_write(ss.str());
+  
     }
     
     void on_sync(std::vector<std::string> & parsed_msg){
@@ -294,7 +257,7 @@ private:
         if(tpm_found){
             std::stringstream ss;
             ss << "1\t" << tpms.at(tpm_index).id() << "\t" << tpms.at(tpm_index).iteration() << "\n";
-            std::cout << ss.str() << std::endl;
+            std::cout << "on_sync: " << ss.str() << std::endl;
             do_write(ss.str());
         } else{ // must be new machine? but shouldnt be
             
@@ -305,24 +268,7 @@ private:
         
     }
     
-    void on_init(std::vector<std::string> & parsed_msg){
-        
-        srand(123456789); // consistend messages
-        
-        
-        
-        tpms.push_back(single_tpm_network_handler(rand()%5000, 5000));
-        // NB should make sure this id is unique -- will do later
-        
-        
-        tpms.back().set_partner(std::stoi(parsed_msg.at(1)));
-        
-        std::stringstream ss;
-        ss << "3\t" << tpms.back().id() << "\t" << tpms.back().iteration() << "\t" << tpms.back().partner() << "\n";
-        std::cout << "on_init: " << ss.str() << std::endl;
-        do_write(ss.str());
-  
-    }
+    
     
     void on_linking(std::vector<std::string> & parsed_msg){
         bool tpm_found = false;
@@ -332,7 +278,7 @@ private:
         
         for(int i=0; i < tpms.size(); i++){
             if(tpms.at(i).id() == std::stoi(parsed_msg.at(3))){
-                tpms.at(i).set_partner(std::stoi(parsed_msg.at(2)));
+                tpms.at(i).set_partner(std::stoi(parsed_msg.at(1)));
                 tpms.at(i).iteration_increase();
                 tpm_found = true;
                 tpm_index = i;
@@ -342,7 +288,7 @@ private:
         if(tpm_found){
             std::stringstream ss;
             ss << "1\t" << tpms.at(tpm_index).id() << "\t" << tpms.at(tpm_index).iteration() << "\n";
-            std::cout << ss.str() << std::endl;
+            std::cout << "on_linking: " << ss.str() << std::endl;
             do_write(ss.str());
         }
         else{ // something is not right
@@ -445,4 +391,3 @@ int main(int argc, char* argv[]) {
 }
 
 
-//g++ main.cpp -lboost_system -lpthread -lboost_thread -o sync
