@@ -47,6 +47,8 @@ OBJECTFILES= \
 	${OBJECTDIR}/bookEcho/seriousClientAndServer/test/server.o \
 	${OBJECTDIR}/bookEcho/serverAsync.o \
 	${OBJECTDIR}/main.o \
+	${OBJECTDIR}/mainIsh/before-buffer-handlers.o \
+	${OBJECTDIR}/mainIsh/main-before-refactor.o \
 	${OBJECTDIR}/mainIsh/main.o \
 	${OBJECTDIR}/netowkingContinued.o
 
@@ -134,6 +136,16 @@ ${OBJECTDIR}/main.o: main.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.cpp
+
+${OBJECTDIR}/mainIsh/before-buffer-handlers.o: mainIsh/before-buffer-handlers.cpp
+	${MKDIR} -p ${OBJECTDIR}/mainIsh
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/mainIsh/before-buffer-handlers.o mainIsh/before-buffer-handlers.cpp
+
+${OBJECTDIR}/mainIsh/main-before-refactor.o: mainIsh/main-before-refactor.cpp
+	${MKDIR} -p ${OBJECTDIR}/mainIsh
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/mainIsh/main-before-refactor.o mainIsh/main-before-refactor.cpp
 
 ${OBJECTDIR}/mainIsh/main.o: mainIsh/main.cpp
 	${MKDIR} -p ${OBJECTDIR}/mainIsh

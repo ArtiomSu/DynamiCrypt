@@ -15,12 +15,14 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>bookEcho/Echo1.cpp</itemPath>
+      <itemPath>mainIsh/before-buffer-handlers.cpp</itemPath>
       <itemPath>bookEcho/seriousClientAndServer/async/client-using-co-routines.cpp</itemPath>
       <itemPath>bookEcho/seriousClientAndServer/test/client.cpp</itemPath>
       <itemPath>bookEcho/seriousClientAndServer/async/client.cpp</itemPath>
       <itemPath>bookEcho/clientAsync.cpp</itemPath>
       <itemPath>bookEcho/seriousClientAndServer/clientSync.cpp</itemPath>
       <itemPath>bookEcho/echoServerSync.cpp</itemPath>
+      <itemPath>mainIsh/main-before-refactor.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
       <itemPath>mainIsh/main.cpp</itemPath>
       <itemPath>netowkingContinued.cpp</itemPath>
@@ -116,6 +118,10 @@
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="mainIsh/before-buffer-handlers.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="mainIsh/main-before-refactor.cpp" ex="false" tool="1" flavor2="0">
+      </item>
       <item path="mainIsh/main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="netowkingContinued.cpp" ex="false" tool="1" flavor2="0">
@@ -195,6 +201,10 @@
       <item path="bookEcho/serverAsync.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="mainIsh/before-buffer-handlers.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="mainIsh/main-before-refactor.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="mainIsh/main.cpp" ex="false" tool="1" flavor2="0">
       </item>

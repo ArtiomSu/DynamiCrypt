@@ -22,16 +22,13 @@ using std::endl;
 
 io_service service;
 
-const int MAX_TPMS_PER_PEER =1;
+const int MAX_TPMS_PER_PEER = 2;
 const int max_msg = 1024;
 
 class peer;
 typedef std::vector<boost::shared_ptr<peer>> array; // array of shared pointers to talk_to_client class
 array peers;
 boost::recursive_mutex update_peer_list_lock;
-boost::recursive_mutex write_lock;
-boost::recursive_mutex read_lock;
-boost::recursive_mutex read_lock_msg;
 boost::mutex mutex_lock;
 const bool USE_PRINT_LOCK = false;
 
@@ -120,15 +117,10 @@ public:
         return buffers.at(index).write_buffer_;
     }
     
-    char* get_global_readbuffer(){
-        return global_readbuffer;
-    }
-    
     
     
 private:
     std::vector<buffers_read_write> buffers;
-    char global_readbuffer[max_msg];
     
 };
 
@@ -384,54 +376,9 @@ private:
         if ( err) stop();
         if ( !started() ) return;
         
-        //boost::recursive_mutex::scoped_lock lk(cs_);
+        boost::recursive_mutex::scoped_lock lk(cs_);
         // process the msg
-        { boost::recursive_mutex::scoped_lock lk(read_lock);
-        //std::string msg(buffers_handler_.get_read_buffer(buffer_index), bytes);
-        //std::string msg(buffers_handler_.get_global_readbuffer(), bytes);
-        
-        std::string msg;
-        bool use_buff = true;
-        if(sock_using_ep == false && buffer_index == -1){
-            std::string temp(buffers_handler_.get_global_readbuffer(), bytes);
-            msg = temp;
-            use_buff = false;
-        
-        }
-        
-        if(sock_using_ep == false &&  (buffers_handler_.get_num_buffers() <= MAX_TPMS_PER_PEER)){
-            buffer_index = buffers_handler_.create_buffers();
-            if(USE_PRINT_LOCK)
-                mutex_lock.lock();
-            std::cout << " do_read creating buffers with index " << buffer_index << std::endl;
-            if(USE_PRINT_LOCK)
-                mutex_lock.unlock();
-        }
-        
-        if(use_buff){
-            std::string temp(buffers_handler_.get_read_buffer(buffer_index), bytes);
-            msg = temp;
-
-        }
-        
-        std::cout << "on read message: " << msg << std::endl;
-        
-        
-        
-        /*
-        if(sock_using_ep == false){ // create buffers here
-            if((buffer_index == -1) || (buffers_handler_.get_num_buffers() <= MAX_TPMS_PER_PEER)){
-                buffer_index = buffers_handler_.create_buffers();
-            if(USE_PRINT_LOCK)
-                mutex_lock.lock();
-            std::cout << " do_read creating buffers with index " << buffer_index << std::endl;
-            if(USE_PRINT_LOCK)
-                mutex_lock.unlock();
-            }
-            
- 
-        }
-        */
+        std::string msg(buffers_handler_.get_read_buffer(buffer_index), bytes);
         msg.pop_back();
         
         
@@ -484,13 +431,11 @@ private:
                 mutex_lock.unlock();
         }
         
-         }
-        
          
     }
     
     void do_read(int buffer_index) {
-        /*if(sock_using_ep == false){ // create buffers here
+        if(sock_using_ep == false){ // create buffers here
             if((buffer_index == -1) || (buffers_handler_.get_num_buffers() <= MAX_TPMS_PER_PEER)){
                 buffer_index = buffers_handler_.create_buffers();
             if(USE_PRINT_LOCK)
@@ -501,21 +446,13 @@ private:
             }
             
  
-        }*/
+        }
         if(USE_PRINT_LOCK)
             mutex_lock.lock();
         std::cout << " reading with buffer index " << buffer_index << std::endl;
         if(USE_PRINT_LOCK)
             mutex_lock.unlock();
-        { boost::recursive_mutex::scoped_lock lk(read_lock);
-        //async_read(sock_, buffer(buffers_handler_.get_read_buffer(buffer_index), max_msg), MEM_FN3(read_complete,_1,_2,buffer_index), MEM_FN3(on_read,_1,_2,buffer_index));
-        if(sock_using_ep == false && buffer_index == -1){
-        async_read(sock_, buffer(buffers_handler_.get_global_readbuffer(), max_msg), MEM_FN3(read_complete,_1,_2,buffer_index), MEM_FN3(on_read,_1,_2,buffer_index));
-        } 
-        else{
-            async_read(sock_, buffer(buffers_handler_.get_read_buffer(buffer_index), max_msg), MEM_FN3(read_complete,_1,_2,buffer_index), MEM_FN3(on_read,_1,_2,buffer_index));
-        }
-        }
+        async_read(sock_, buffer(buffers_handler_.get_read_buffer(buffer_index), max_msg), MEM_FN3(read_complete,_1,_2,buffer_index), MEM_FN3(on_read,_1,_2,buffer_index));
         //post_check_ping();
     }
     
@@ -531,26 +468,13 @@ private:
         if(USE_PRINT_LOCK)
             mutex_lock.unlock();
         std::copy(msg.begin(), msg.end(), buffers_handler_.get_write_buffer(buffer_index));
-        { boost::recursive_mutex::scoped_lock lk(write_lock);
         sock_.async_write_some( buffer(buffers_handler_.get_write_buffer(buffer_index), msg.size()), MEM_FN3(on_write,_1,_2,buffer_index));
-         }
-         
     }
     
     size_t read_complete(const boost::system::error_code & err, size_t bytes, int buffer_index) {
         if ( err) return 0;
-        bool found = 0;
-        if(sock_using_ep == false && buffer_index == -1){
-            found = std::find(buffers_handler_.get_global_readbuffer(), buffers_handler_.get_global_readbuffer() + bytes, '\n') < buffers_handler_.get_global_readbuffer() + bytes;
-        }
-        else{
-            found = std::find(buffers_handler_.get_read_buffer(buffer_index), buffers_handler_.get_read_buffer(buffer_index) + bytes, '\n') < buffers_handler_.get_read_buffer(buffer_index) + bytes;
-
-        }
-        //bool found = std::find(buffers_handler_.get_read_buffer(buffer_index), buffers_handler_.get_read_buffer(buffer_index) + bytes, '\n') < buffers_handler_.get_read_buffer(buffer_index) + bytes;
+        bool found = std::find(buffers_handler_.get_read_buffer(buffer_index), buffers_handler_.get_read_buffer(buffer_index) + bytes, '\n') < buffers_handler_.get_read_buffer(buffer_index) + bytes;
         // we read one-by-one until we get to enter, no buffering
-        
-        
         return found ? 0 : 1;
     }
     
@@ -560,7 +484,7 @@ private:
     // different message types
     void on_connect(const error_code & err) {
         
-        for(int b=0; b< MAX_TPMS_PER_PEER; b++){ //create 10 tpms
+        for(int b; b< MAX_TPMS_PER_PEER; b++){ //create 10 tpms
         
             int id = tpm_handler.create_new_tpm();
 
@@ -757,7 +681,7 @@ void update_peers_changed() {
     }
 }
 
-ip::tcp::acceptor acceptor(service, ip::tcp::endpoint(ip::tcp::v4(), 8002));
+ip::tcp::acceptor acceptor(service, ip::tcp::endpoint(ip::tcp::v4(), 8003));
 
 void handle_accept(peer::ptr peer, const boost::system::error_code & err) {
     peer->start(); // starts current client
@@ -793,8 +717,7 @@ int main(int argc, char* argv[]) {
     peer::ptr initiating_peer = peer::new_(true, "127.0.0.1", 8001);
     initiating_peer->start();
     
-    start_listen(1);
+    start_listen(4);
     threads.join_all();
 }
-
 
