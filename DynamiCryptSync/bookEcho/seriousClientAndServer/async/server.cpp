@@ -24,7 +24,7 @@ io_service service;
 class talk_to_client;
 typedef std::vector<boost::shared_ptr<talk_to_client>> array; // array of shared pointers to talk_to_client class
 array peers;
-boost::recursive_mutex clients_cs;
+boost::recursive_mutex update_peer_list_lock;
 
 int ping_count = 0;
 
@@ -53,7 +53,7 @@ public:
     typedef boost::shared_ptr<talk_to_client> ptr;
     
     void start() {
-        { boost::recursive_mutex::scoped_lock lk(clients_cs);
+        { boost::recursive_mutex::scoped_lock lk(update_peer_list_lock);
         peers.push_back( shared_from_this());
         }
         //boost::recursive_mutex::scoped_lock lk(cs_);
@@ -77,7 +77,7 @@ public:
 
         
         boost::shared_ptr<talk_to_client> self = shared_from_this();
-        { boost::recursive_mutex::scoped_lock lk(clients_cs);
+        { boost::recursive_mutex::scoped_lock lk(update_peer_list_lock);
         array::iterator it = std::find(peers.begin(), peers.end(), self);
         peers.erase(it);
         }
@@ -143,7 +143,7 @@ private:
     
     void on_clients() {
         array copy;
-        { boost::recursive_mutex::scoped_lock lk(clients_cs);
+        { boost::recursive_mutex::scoped_lock lk(update_peer_list_lock);
           copy = peers;
         }
         std::string msg;
@@ -216,7 +216,7 @@ private:
 
 void update_peers_changed() {
     array copy;
-    { boost::recursive_mutex::scoped_lock lk(clients_cs);
+    { boost::recursive_mutex::scoped_lock lk(update_peer_list_lock);
       copy = peers;
     }
     for( array::iterator b = copy.begin(), e = copy.end(); b != e; ++b){
