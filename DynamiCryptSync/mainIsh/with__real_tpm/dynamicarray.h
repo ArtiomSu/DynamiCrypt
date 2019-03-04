@@ -19,7 +19,7 @@ template <class T>
 	class DynamicArray {
 		public:
 		T* Z;
-		~DynamicArray (void){ delete [] Z; Z = NULL;}
+		~DynamicArray (void){ delete [] Z; Z = 0;}
 		void length (T n){ Z = new T [n]; }
 	};
 

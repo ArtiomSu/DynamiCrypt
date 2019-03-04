@@ -20,7 +20,7 @@
 
 class TpmHandler {
 		public :
-		TpmHandler (int initK, int initN, int initL, TreeParityMachine A, TreeParityMachine B, TPMInputVector objInput);
+		TpmHandler ();
 		static int IsEqual (int A, int B);
 		static int RandomBit ();
 		static int Signum (double r);

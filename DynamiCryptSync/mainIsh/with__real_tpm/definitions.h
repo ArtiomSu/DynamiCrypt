@@ -14,7 +14,6 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 #define NEUROCRYPTO_H
-//#define NULL 0
 
 
 #endif /* DEFINITIONS_H */

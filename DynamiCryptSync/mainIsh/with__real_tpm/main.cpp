@@ -52,8 +52,18 @@ void update_peers_changed();
 
 class single_tpm_network_handler{
 public: 
-    single_tpm_network_handler(int id, int max_iterations): iteration_(0), tpm_id_(id), max_iterations_(max_iterations), partner_tpm(0) {
-    
+    single_tpm_network_handler(int id): iteration_(0), tpm_id_(id), partner_tpm(0) {
+       int initK = 8;  // k is hidden neurons	
+       int initN = 10; // n is input neurons
+       int initL = 6;	// range of weights	
+        
+       tpm.Initialize();
+       tpm.RandomWeight();
+        
+       max_iterations_ = (tpm.L*tpm.L*tpm.L*tpm.L)*tpm.N*tpm.K;
+       
+       tmpinputvector.xLength(tpm.K, tpm.N);
+       
     }
     
    
@@ -94,13 +104,13 @@ private:
     int tpm_id_;
     int max_iterations_;
     int partner_tpm; // id of partner tpm
-    
+    TreeParityMachine tpm;
+    TPMInputVector tmpinputvector;
 };
 
 
 class tpm_network_handler{
 public:
-    int max_iterations = 5000;
     tpm_network_handler(){
         srand(time(0)); // consistent messages
     }
@@ -111,7 +121,7 @@ public:
             randomId = rand()%5000;
         }
         
-        tpm_networks_.push_back(single_tpm_network_handler(randomId, max_iterations));
+        tpm_networks_.push_back(single_tpm_network_handler(randomId));
         std::cout << "created new tpm with id " << randomId << std::endl;
         return randomId;
     }

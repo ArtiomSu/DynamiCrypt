@@ -20,17 +20,8 @@
 #include <iostream>
 #include <stdlib.h>
 
-TpmHandler::TpmHandler (int initK, int initN, int initL, TreeParityMachine A, TreeParityMachine B, TPMInputVector objInput) {
-	srand (time(NULL));			//initialize random generator
-	//Initialize A
-	A.K = initK, A.N = initN, A.L = initL;
-	A.Initialize ();
-	A.RandomWeight ();
-	//Initialize B
-	B.K = initK, B.N = initN, B.L = initL;
-	B.Initialize ();
-	B.RandomWeight ();
-	objInput.xLength (B.K, B.N);
+TpmHandler::TpmHandler () {
+
 }
 
 int TpmHandler::IsEqual (int A, int B) {
