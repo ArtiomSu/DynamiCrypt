@@ -48,8 +48,12 @@ OBJECTFILES= \
 	${OBJECTDIR}/bookEcho/serverAsync.o \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/mainIsh/before-buffer-handlers.o \
+	${OBJECTDIR}/mainIsh/connection_handler/Connection.o \
+	${OBJECTDIR}/mainIsh/connection_handler/ConnectionManager.o \
+	${OBJECTDIR}/mainIsh/connection_handler/newmain.o \
 	${OBJECTDIR}/mainIsh/main-before-refactor.o \
 	${OBJECTDIR}/mainIsh/main.o \
+	${OBJECTDIR}/mainIsh/with__real_tpm/main.o \
 	${OBJECTDIR}/netowkingContinued.o
 
 
@@ -142,6 +146,21 @@ ${OBJECTDIR}/mainIsh/before-buffer-handlers.o: mainIsh/before-buffer-handlers.cp
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/mainIsh/before-buffer-handlers.o mainIsh/before-buffer-handlers.cpp
 
+${OBJECTDIR}/mainIsh/connection_handler/Connection.o: mainIsh/connection_handler/Connection.cpp
+	${MKDIR} -p ${OBJECTDIR}/mainIsh/connection_handler
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/mainIsh/connection_handler/Connection.o mainIsh/connection_handler/Connection.cpp
+
+${OBJECTDIR}/mainIsh/connection_handler/ConnectionManager.o: mainIsh/connection_handler/ConnectionManager.cpp
+	${MKDIR} -p ${OBJECTDIR}/mainIsh/connection_handler
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/mainIsh/connection_handler/ConnectionManager.o mainIsh/connection_handler/ConnectionManager.cpp
+
+${OBJECTDIR}/mainIsh/connection_handler/newmain.o: mainIsh/connection_handler/newmain.cpp
+	${MKDIR} -p ${OBJECTDIR}/mainIsh/connection_handler
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/mainIsh/connection_handler/newmain.o mainIsh/connection_handler/newmain.cpp
+
 ${OBJECTDIR}/mainIsh/main-before-refactor.o: mainIsh/main-before-refactor.cpp
 	${MKDIR} -p ${OBJECTDIR}/mainIsh
 	${RM} "$@.d"
@@ -151,6 +170,11 @@ ${OBJECTDIR}/mainIsh/main.o: mainIsh/main.cpp
 	${MKDIR} -p ${OBJECTDIR}/mainIsh
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/mainIsh/main.o mainIsh/main.cpp
+
+${OBJECTDIR}/mainIsh/with__real_tpm/main.o: mainIsh/with__real_tpm/main.cpp
+	${MKDIR} -p ${OBJECTDIR}/mainIsh/with__real_tpm
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/mainIsh/with__real_tpm/main.o mainIsh/with__real_tpm/main.cpp
 
 ${OBJECTDIR}/netowkingContinued.o: netowkingContinued.cpp
 	${MKDIR} -p ${OBJECTDIR}

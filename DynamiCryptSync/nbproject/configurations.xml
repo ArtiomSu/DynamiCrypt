@@ -4,6 +4,8 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>mainIsh/connection_handler/Connection.h</itemPath>
+      <itemPath>mainIsh/connection_handler/ConnectionManager.h</itemPath>
       <itemPath>bookEcho/seriousClientAndServer/async/coroutine.hpp</itemPath>
       <itemPath>bookEcho/seriousClientAndServer/async/yield.hpp</itemPath>
     </logicalFolder>
@@ -14,6 +16,8 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <itemPath>mainIsh/connection_handler/Connection.cpp</itemPath>
+      <itemPath>mainIsh/connection_handler/ConnectionManager.cpp</itemPath>
       <itemPath>bookEcho/Echo1.cpp</itemPath>
       <itemPath>mainIsh/before-buffer-handlers.cpp</itemPath>
       <itemPath>bookEcho/seriousClientAndServer/async/client-using-co-routines.cpp</itemPath>
@@ -25,7 +29,9 @@
       <itemPath>mainIsh/main-before-refactor.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
       <itemPath>mainIsh/main.cpp</itemPath>
+      <itemPath>mainIsh/with__real_tpm/main.cpp</itemPath>
       <itemPath>netowkingContinued.cpp</itemPath>
+      <itemPath>mainIsh/connection_handler/newmain.cpp</itemPath>
       <itemPath>bookEcho/seriousClientAndServer/test/server.cpp</itemPath>
       <itemPath>bookEcho/seriousClientAndServer/async/server.cpp</itemPath>
       <itemPath>bookEcho/serverAsync.cpp</itemPath>
@@ -120,9 +126,36 @@
       </item>
       <item path="mainIsh/before-buffer-handlers.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="mainIsh/connection_handler/Connection.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="mainIsh/connection_handler/Connection.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="mainIsh/connection_handler/ConnectionManager.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="mainIsh/connection_handler/ConnectionManager.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="mainIsh/connection_handler/newmain.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
       <item path="mainIsh/main-before-refactor.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="mainIsh/main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="mainIsh/with__real_tpm/main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="netowkingContinued.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -204,9 +237,36 @@
       </item>
       <item path="mainIsh/before-buffer-handlers.cpp" ex="false" tool="1" flavor2="0">
       </item>
+      <item path="mainIsh/connection_handler/Connection.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="mainIsh/connection_handler/Connection.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="mainIsh/connection_handler/ConnectionManager.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="mainIsh/connection_handler/ConnectionManager.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="mainIsh/connection_handler/newmain.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
       <item path="mainIsh/main-before-refactor.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="mainIsh/main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="mainIsh/with__real_tpm/main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="netowkingContinued.cpp" ex="false" tool="1" flavor2="0">
       </item>

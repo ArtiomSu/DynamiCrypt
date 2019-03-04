@@ -12,8 +12,18 @@
 #include <boost/make_shared.hpp>
 #include <boost/thread/recursive_mutex.hpp>
 #include <boost/algorithm/string.hpp> // for string splicing
+#include <boost/program_options.hpp>
+#include <iterator>
 #include <string>
 #include <mutex>
+
+
+#include "tpminputvector.h"
+#include "dynamicarray.h"
+#include "treeparitymachine.h"
+#include "tpmhandler.h"
+
+//g++ main.cpp -lboost_system -lpthread -lboost_thread -lboost_program_options -o sync
 
 using namespace boost::asio;
 using ip::tcp;
@@ -22,7 +32,7 @@ using std::endl;
 
 io_service service;
 
-const int MAX_TPMS_PER_PEER = 2;
+const int MAX_TPMS_PER_PEER = 1;
 const int MAX_BUFF = 1024;
 class peer;
 typedef std::vector<boost::shared_ptr<peer>> array; // array of shared pointers to talk_to_client class
@@ -39,20 +49,6 @@ int ping_count = 0;
 
 
 void update_peers_changed();
-
-class my_read_buffer{
-   public:  
-       my_read_buffer(){}
-       
-       char read_buffer_[MAX_BUFF];
-};
-
-class my_write_buffer{
-   public:  
-       my_write_buffer(){}
-       
-       char write_buffer_[MAX_BUFF];
-};
 
 class single_tpm_network_handler{
 public: 
@@ -290,16 +286,15 @@ private:
     
     
     
-    void on_read(const error_code & err, size_t bytes, int buffer_index) {
+    void on_read(const error_code & err, size_t bytes) {
         if ( err) stop();
         if ( !started() ) return;
         
       //  { boost::recursive_mutex::scoped_lock lk(read_lock);
         // process the msg
-        std::string msg(read_buffer_.at(buffer_index).read_buffer_, bytes);
+        std::string msg(read_buffer_, bytes);
         msg.pop_back();
         
-        std::cout << "index of buffer " << buffer_index << " on read message: " << msg << std::endl;
         std::vector<std::string> parsed_msg; 
         boost::split(parsed_msg, msg, [](char c){return c == '\t';});
         
@@ -484,10 +479,7 @@ private:
     
     void do_read() {
         { boost::recursive_mutex::scoped_lock lk(read_lock);
-        read_buffer_.push_back(my_read_buffer());
-        int buffer_index = read_buffer_.size() -1;                      // add the index to these
-        std::cout << "reading to buffer index " << buffer_index << std::endl;
-        async_read(sock_, buffer(read_buffer_.at(buffer_index).read_buffer_), MEM_FN3(read_complete,_1,_2,buffer_index), MEM_FN3(on_read,_1,_2,buffer_index));
+        async_read(sock_, buffer(read_buffer_), MEM_FN2(read_complete,_1,_2), MEM_FN2(on_read,_1,_2));
          }
         //post_check_ping();
     }
@@ -495,22 +487,17 @@ private:
     void do_write(const std::string & msg) {
         if ( !started() ) return;
         { boost::recursive_mutex::scoped_lock lk(write_lock);
-       // boost::recursive_mutex::scoped_lock lk(cs_);
-        write_buffer_.push_back(my_write_buffer());
-        int buffer_index = write_buffer_.size() -1;
-        std::copy(msg.begin(), msg.end(), write_buffer_.at(buffer_index).write_buffer_);
-        std::cout << "writing to buffer index " << buffer_index << std::endl;
-        sock_.async_write_some( buffer(write_buffer_.at(buffer_index).write_buffer_, msg.size()), MEM_FN2(on_write,_1,_2));
+       // boost::recursive_mutex::scoped_lock lk(cs_);        
+        std::copy(msg.begin(), msg.end(), write_buffer_);
+        sock_.async_write_some( buffer(write_buffer_, msg.size()), MEM_FN2(on_write,_1,_2));
          }
     }
     
-    size_t read_complete(const boost::system::error_code & err, size_t bytes, int buffer_index) {
+    size_t read_complete(const boost::system::error_code & err, size_t bytes) {
         if ( err) return 0;
         //{ boost::recursive_mutex::scoped_lock lk(read_lock);
-        bool found = std::find(read_buffer_.at(buffer_index).read_buffer_, read_buffer_.at(buffer_index).read_buffer_ + bytes, '\n') < read_buffer_.at(buffer_index).read_buffer_ + bytes;
+        bool found = std::find(read_buffer_, read_buffer_ + bytes, '\n') < read_buffer_ + bytes;
         // we read one-by-one until we get to enter, no buffering
-        std::cout << "read_complete() to buffer index " << buffer_index << std::endl;
-         
         return found ? 0 : 1;
        // }
     }
@@ -522,10 +509,8 @@ private:
     std::string ip_address_;
     int ip_port_;
     
-    //char read_buffer_[max_msg];
-    //char write_buffer_[max_msg];
-    std::vector<my_read_buffer> read_buffer_;
-    std::vector<my_write_buffer> write_buffer_;
+    char read_buffer_[MAX_BUFF];
+    char write_buffer_[MAX_BUFF];
     bool started_;
     std::string username_;
     deadline_timer timer_;
@@ -545,18 +530,18 @@ void update_peers_changed() {
     }
 }
 
-ip::tcp::acceptor acceptor(service, ip::tcp::endpoint(ip::tcp::v4(), 8002));
 
-void handle_accept(peer::ptr peer, const boost::system::error_code & err) {
+
+void handle_accept(peer::ptr peer, const boost::system::error_code & err, ip::tcp::acceptor* acceptor) {
     peer->start(); // starts current client
     
     // creates and listens for new client
     peer::ptr new_peer = peer::new_(false); // false to accepting connection
     std::cout << "handle_accept run test" << std::endl;
-    acceptor.async_accept(new_peer->sock(), boost::bind(handle_accept,new_peer,_1)); // this 
+    acceptor->async_accept(new_peer->sock(), boost::bind(handle_accept,new_peer,_1,acceptor)); // this 
 }
 
-/*
+
 boost::thread_group threads;
 
 void listen_thread() {
@@ -570,23 +555,69 @@ void start_listen(int thread_count) {
 
 
 int main(int argc, char* argv[]) {
-    peer::ptr initial_peer = peer::new_(false);
-    acceptor.async_accept(initial_peer->sock(), boost::bind(handle_accept,initial_peer,_1));
-    std::cout << "sending request" << std::endl;
+    //boost::shared_ptr<ip::tcp::acceptor> acceptor(new ip::tcp::acceptor(service));
+   // ip::tcp::endpoint ep(ip::tcp::v4(), 8002);
+   // acceptor->open(ip::tcp::v4());
+   // acceptor->bind(ep);
     
-    peer::ptr initiating_peer = peer::new_(true, "127.0.0.1", 8002);
-    initiating_peer->start();
+    int listen_port = -1;
+    int connect_port = -1;
+    char help_message[] = {"sync --listen-port 8001 --connect-port 8002"};
+    try {
+
+        boost::program_options::options_description desc("Allowed options");
+        desc.add_options()
+            ("help", help_message)
+            ("listen-port", boost::program_options::value<int>(), "set port to listen on")
+            ("connect-port", boost::program_options::value<int>(), "set port to connect to")
+        ;
+
+        boost::program_options::variables_map vm;        
+        boost::program_options::store(boost::program_options::parse_command_line(argc, argv, desc), vm);
+        boost::program_options::notify(vm);    
+
+        if (vm.count("help")) {
+            cout << help_message << "\n";
+            return 0;
+        }
+
+        if (vm.count("listen-port")) {
+            listen_port = vm["listen-port"].as<int>();
+        } 
+        
+        if (vm.count("connect-port")) {
+            connect_port = vm["connect-port"].as<int>();
+        } 
+        
+        
+        
+    }
+    catch(std::exception& e) {
+        std::cerr << "error: " << e.what() << "\n";
+        return 1;
+    }
+    catch(...) {
+        std::cerr << "Exception of unknown type!\n";
+    }
+    
+    if(listen_port == -1){
+        std::cout << help_message << std::endl;
+        return 0;
+    }
+    
+    std::cout << "started sync using port " << listen_port << " sending to port " << connect_port << std::endl;
+    
+    ip::tcp::acceptor acceptor(service, ip::tcp::endpoint(ip::tcp::v4(), listen_port));
+    peer::ptr initial_peer = peer::new_(false);
+    acceptor.async_accept(initial_peer->sock(), boost::bind(handle_accept,initial_peer,_1, &acceptor));
+    
+    
+    if(connect_port != -1){
+        std::cout << "sending request" << std::endl;
+        peer::ptr initiating_peer = peer::new_(true, "127.0.0.1", connect_port);
+        initiating_peer->start();
+    }
     
     start_listen(4);
     threads.join_all();
-}
-*/
-int main(int argc, char* argv[]) {
-     peer::ptr initial_peer = peer::new_(false);
-    acceptor.async_accept(initial_peer->sock(), boost::bind(handle_accept,initial_peer,_1));
-    std::cout << "sending request" << std::endl;
-    
-    peer::ptr initiating_peer = peer::new_(true, "127.0.0.1", 8001);
-    initiating_peer->start();
-    service.run();
 }
