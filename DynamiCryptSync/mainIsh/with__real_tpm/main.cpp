@@ -57,12 +57,18 @@ public:
        int initN = 10; // n is input neurons
        int initL = 6;	// range of weights	
         
+       tpm.K = initK;
+       tpm.N = initN;
+       tpm.L = initL;
+       
        tpm.Initialize();
        tpm.RandomWeight();
         
        max_iterations_ = (tpm.L*tpm.L*tpm.L*tpm.L)*tpm.N*tpm.K;
        
        tmpinputvector.xLength(tpm.K, tpm.N);
+       
+       std::cout << "max_iterations_ " << max_iterations_;
        
     }
     
