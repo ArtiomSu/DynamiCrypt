@@ -21,7 +21,7 @@ void TPMInputVector::xLength (int K, int N) {
 
 void TPMInputVector::set_from_string(std::string in_string, int K, int N){
 	int iterator = 0;
-
+        int max_length = K*N;
 	for(int i=0;i<in_string.length();i++){
 		//cout << input[i] - '0' << " " << input[i] << endl;
 		if(in_string[i] == '-'){
@@ -35,6 +35,9 @@ void TPMInputVector::set_from_string(std::string in_string, int K, int N){
 		}
 
 		iterator++;
+                if(iterator == max_length){
+                    break;
+                }
     	//in_vec->X.Z[i] = input[i] - '0';
 	}
 }

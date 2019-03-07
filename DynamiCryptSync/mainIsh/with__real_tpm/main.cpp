@@ -134,6 +134,7 @@ public:
     }
     
     std::string get_key(){
+        /*
         const char Dictionary [] = "0123456789_abcdefghijklmnopqrstuvwxyz";
             int key_size = (sizeof(Dictionary)-1) / (tpm.L * 2 + 1);
             int key_length = tpm.K * tpm.N / key_size;
@@ -157,12 +158,42 @@ public:
                 ss << key.Z[i-1];
             }
             std::cout << "key 6" << std::endl;
+            
+            
+            
             key.Z[key_length]='\0'; 
             std::cout << "key 7" << std::endl;
             ss << "\0";
             
             //check_for_key_counter = 0;
             return ss.str();
+        */
+        std::stringstream ss;
+        int keys_gen[tpm.K * tpm.N];    
+        for (int i=0; i <tpm.K * tpm.N ; i++) {
+            ss << tpm.W.Z[i] + tpm.L;
+        }
+        
+        
+        
+        
+        
+         //getWeightValue();
+        return ss.str();
+        
+    }
+    
+    int getWeightValue(){
+        int val = 0;
+        
+        for (int i=0; i <tpm.K * tpm.N ; i++) {
+            val = val + tpm.W.Z[i];
+        
+        }
+        
+        return val;
+        
+        
     }
     
     int id(){
