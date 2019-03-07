@@ -17,6 +17,9 @@
 #include <string>
 #include <mutex>
 
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_int_distribution.hpp>
+
 
 #include "tpminputvector.h"
 #include "dynamicarray.h"
@@ -42,6 +45,8 @@ boost::recursive_mutex write_lock;
 
 int ping_count = 0;
 
+const int PRINT_SYNC_MESSAGES =1;
+
 #define MEM_FN(x)       boost::bind(&self_type::x, shared_from_this())
 #define MEM_FN1(x,y)    boost::bind(&self_type::x, shared_from_this(),y)
 #define MEM_FN2(x,y,z)  boost::bind(&self_type::x, shared_from_this(),y,z)
@@ -52,7 +57,7 @@ void update_peers_changed();
 
 class single_tpm_network_handler{
 public: 
-    single_tpm_network_handler(int id): iteration_(0), tpm_id_(id), partner_tpm(0) {
+    single_tpm_network_handler(int id): iteration_(0), tpm_id_(id), partner_tpm(0), check_for_key_counter(0) {
        int initK = 8;  // k is hidden neurons	
        int initN = 10; // n is input neurons
        int initL = 6;	// range of weights	
@@ -68,7 +73,7 @@ public:
        
        tmpinputvector.xLength(tpm.K, tpm.N);
        
-       std::cout << "max_iterations_ " << max_iterations_;
+       
        
     }
     
@@ -77,13 +82,87 @@ public:
         return iteration_;
     }
     
+    int increase_key_counter(){
+        check_for_key_counter = check_for_key_counter+ 1;
+        return check_for_key_counter;
+    }
+    
     int iteration_increase(){
+        // 0 = too high need to reset tpm
+        // 1 = everything ok continue,
+        // ? = perform hash and check key
+        
+        int return_type = 0;
         if(iteration_ == max_iterations_){
-            return 0;
+            return_type = 0;
         } else{
            iteration_++;
-           return 1;
+           return_type = 1;
         }
+        /*if(check_for_key_counter == 1000){
+            const char Dictionary [] = "0123456789_abcdefghijklmnopqrstuvwxyz";
+            int key_size = (sizeof(Dictionary)-1) / (tpm.L * 2 + 1);
+            int key_length = tpm.K * tpm.N / key_size;
+            DynamicArray<char> key;
+            key.length(key_length + 1);
+	
+            for(int i = 0; i < key_length; i++){
+                key.Z[i] = 0;
+            }
+	
+            std::stringstream ss;
+            for (int i=1; i < key_length+1; i++) {
+                int K = 1;
+                for(int j=(i-1)*key_size; j<i*key_size;j++){
+                    K = K + tpm.W.Z[j] + tpm.L;
+                }
+                key.Z[i-1]=Dictionary[K];
+                ss << key.Z[i-1];
+            }
+
+            key.Z[key_length]='\0'; 
+            ss << "\0";
+            
+            check_for_key_counter = 0;
+            
+            std::cout << "Key right now is: " << ss.str() << std::endl;
+        }
+        */
+        
+        return return_type;
+        
+    }
+    
+    std::string get_key(){
+        const char Dictionary [] = "0123456789_abcdefghijklmnopqrstuvwxyz";
+            int key_size = (sizeof(Dictionary)-1) / (tpm.L * 2 + 1);
+            int key_length = tpm.K * tpm.N / key_size;
+            std::cout << "key 1" << std::endl;
+            DynamicArray<char> key;
+            key.length(key_length + 1);
+            std::cout << "key 2" << std::endl;
+            for(int i = 0; i < key_length; i++){
+                key.Z[i] = 0;
+            }
+            std::cout << "key 3" << std::endl;
+            std::stringstream ss;
+            for (int i=1; i < key_length+1; i++) {
+                int K = 1;
+                for(int j=(i-1)*key_size; j<i*key_size;j++){
+                  //  std::cout << "key 4" << std::endl;
+                    K = K + tpm.W.Z[j] + tpm.L;
+                }
+                //std::cout << "key 5" << std::endl;
+                key.Z[i-1]=Dictionary[K];
+                ss << key.Z[i-1];
+            }
+            std::cout << "key 6" << std::endl;
+            key.Z[key_length]='\0'; 
+            std::cout << "key 7" << std::endl;
+            ss << "\0";
+            
+            //check_for_key_counter = 0;
+            return ss.str();
     }
     
     int id(){
@@ -102,7 +181,40 @@ public:
     
     void reset(){
         iteration_ = 0;
-        
+        check_for_key_counter = 0;
+        tpm.RandomWeight();
+    }
+    
+    void reset_check_for_key_counter(){
+        check_for_key_counter = 0;
+    }
+    
+    TPMInputVector* get_tmpinputvector(){
+        return &tmpinputvector;
+    }
+    
+    std::string create_random_input_vector(){
+        tmpinputvector.CreateRandomVector(tpm.K, tpm.N);
+        return tmpinputvector.to_string(tpm.K, tpm.N);
+    }
+    
+    int set_random_input_vector_from_string(std::string input){
+        tmpinputvector.set_from_string(input, tpm.K, tpm.N);
+        return 1;
+    }
+    
+    int compute_tpm_result(){
+        tpm.ComputeTPMResult(tmpinputvector.X);
+        return tpm.TPMOutput;
+    }
+    
+    void update_weight(){
+        //std::cout << 
+        tpm.UpdateWeight(tmpinputvector.X);
+    }
+    
+    int get_max_iterations(){
+        return max_iterations_;
     }
     
 private:
@@ -112,13 +224,14 @@ private:
     int partner_tpm; // id of partner tpm
     TreeParityMachine tpm;
     TPMInputVector tmpinputvector;
+    int check_for_key_counter;
 };
 
 
 class tpm_network_handler{
 public:
     tpm_network_handler(){
-        srand(time(0)); // consistent messages
+        //srand(time(0)); // consistent messages
     }
     
     int create_new_tpm(){
@@ -170,6 +283,10 @@ public:
         return 1;
     }
     
+    int get_max_iterations(int index){
+        return tpm_networks_[index].get_max_iterations();
+    }
+    
     int getid(int index){
         return tpm_networks_[index].id();
           
@@ -210,7 +327,149 @@ public:
         
     }
     
+    int increase_key_counter(int index){
+        return tpm_networks_[index].increase_key_counter();
+          
+    }
+    
+    std::string get_key_tpm(int index){
+        return tpm_networks_[index].get_key();
+    }
+    
    
+    // when initially synced using on_linking and on_reset
+    std::string sync_tpm_message_one(int tpm_id){
+        std::stringstream ss;
+        int index = find_tpm(tpm_id, false);
+        
+        std::string random_input_vector = tpm_networks_[index].create_random_input_vector();
+        int tpm_result = tpm_networks_[index].compute_tpm_result();
+        
+        // id, itteration, randomVector, resultOfVector
+        ss << "1\t" << tpm_id << "\t" << tpm_networks_[index].id() << "\t" << tpm_networks_[index].iteration() << "\t" << random_input_vector << "\t" << tpm_result << "\t" << 1 << "\n";
+        //     0         1                       2                                       3                                      4                           5                  6 messagetype to process
+        // parsed message ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        
+        std::cout << "sync_tpm_message_one end" << std::endl;
+        return ss.str();
+        
+        // sends random vector and result to said random vector but doesn't update weights.
+        
+    }
+    
+    // when  synced using sync
+    std::string sync_tpm_message_one_advanced(int tpm_id, std::vector<std::string> & parsed_msg){
+        // receives random vector and partners result to that vector 
+        // use that vector and test ouput
+        // if output == this output then update weights 
+        // tell the other machine to update too by using some variable
+        
+        // then for this itteration create random vector, compute result 
+        // send the new vector and new result too.
+        
+        // at the end send
+        // old_random_vector, tell_machine_to_update_or_not_using_the_old_vector, new_vector, new_TPM_output.
+        
+        // maybe dont send old vector as it is not really needed
+        
+        std::stringstream ss;
+        int index = find_tpm(tpm_id, false);
+        int tell_machine_to_update = 0;
+        int tpm_result = 0;
+        int message_type_to_process = 0;
+        std::string random_input_vector;
+        std::string old_input_vector;
+        
+        int processing_message_type_now = std::stoi(parsed_msg.at(6));
+        
+        
+        std::string key;
+        
+        if(processing_message_type_now == 1){ // dont update ur weights straight away
+            std::string random_vector_received = parsed_msg.at(4);
+            old_input_vector = random_vector_received;
+            int result_received = std::stoi(parsed_msg.at(5));
+            tpm_networks_[index].set_random_input_vector_from_string(random_vector_received);
+            int tpm_result_old = tpm_networks_[index].compute_tpm_result();
+                    
+            if(tpm_result_old == result_received){
+                tpm_networks_[index].update_weight();
+                tell_machine_to_update = 1;
+            }        
+        
+            
+            random_input_vector = tpm_networks_[index].create_random_input_vector();
+            tpm_result = tpm_networks_[index].compute_tpm_result();
+            
+            std::cout << "sync_tpm_message_one_advanced-1 before getKey" << std::endl;
+            message_type_to_process = 2;
+            key = tpm_networks_[index].get_key();
+            std::cout << "sync_tpm_message_one_advanced-1 end" << std::endl;
+            //std::cout << "\n\nok\n"; 
+        } 
+        
+        // update on old weight which should be still present in the tpm
+                
+        else if(processing_message_type_now == 2) {
+            
+            tell_machine_to_update = std::stoi(parsed_msg.at(7));
+            //std::cout << "\n\nokkkk\n"; 
+            if(tell_machine_to_update == 1){
+                old_input_vector = parsed_msg.at(8);
+                tpm_networks_[index].set_random_input_vector_from_string(old_input_vector);
+                //std::cout << "\n\tell_machine_to_update\n";
+                tpm_networks_[index].update_weight();
+                 
+                std::string other_key = parsed_msg.at(9);
+                key = tpm_networks_[index].get_key();
+                
+                if (!key.compare(other_key)) {
+                    // keys are the same
+                    std::cout << "found same key: " << key << std::endl;
+                    std::exit(1);
+                }
+                
+            }
+            
+            
+            
+            
+            tell_machine_to_update = 0;
+            
+            std::string random_vector_received = parsed_msg.at(4);
+            old_input_vector = random_vector_received;
+          
+            int result_received = std::stoi(parsed_msg.at(5));
+            
+            tpm_networks_[index].set_random_input_vector_from_string(random_vector_received);
+            int tpm_result_old = tpm_networks_[index].compute_tpm_result();
+                    
+            if(tpm_result_old == result_received){
+                tpm_networks_[index].update_weight();
+                tell_machine_to_update = 1;
+            }        
+            
+
+           // then continue as normal and send back the result for new vector
+            random_input_vector = tpm_networks_[index].create_random_input_vector();
+            tpm_result = tpm_networks_[index].compute_tpm_result();
+            key = tpm_networks_[index].get_key();
+            // send id, id again? lol, iteration, reandom-vector, tpm result,   tell machine to update doesnt matter, message type should be 1 since this is basically the same as sync_tpm_message_one
+            message_type_to_process = 2;
+            
+        }
+        
+        
+       
+        // mostly compatible with sync_tpm_message_one message.
+        ss << "1\t" << tpm_id << "\t" << tpm_networks_[index].id() << "\t" << tpm_networks_[index].iteration() <<  "\t" << random_input_vector << "\t" << tpm_result << "\t" << message_type_to_process  << "\t" << tell_machine_to_update<< "\t" << old_input_vector << "\t" << key << "\n";
+        //     0         1                       2                                       3                                      4                           5                                   6                          7                               8                     9
+        // parsed message ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        
+        
+        return ss.str();
+        
+    }
     
     
     
@@ -316,7 +575,9 @@ private:
         
         // partner id \t partners iteration
         if(std::stoi(parsed_msg.at(0)) == 1){ // message type 1;
-            std::cout << "message type 1 received" << "with partner id of " << parsed_msg.at(1) << " and iteration " << parsed_msg.at(2) <<  std::endl;
+            if(PRINT_SYNC_MESSAGES){
+                std::cout << "message type 1 received" << "with partner id of " << parsed_msg.at(1) << " and iteration " << parsed_msg.at(3) <<  std::endl;
+            }
             on_sync(parsed_msg);
         } 
         // init tree parity machines
@@ -372,7 +633,7 @@ private:
         
         std::stringstream ss;
         ss << "3\t" << id << "\t" << tpm_handler.get_iteration(id) << "\t" << tpm_handler.get_partner(id) << "\n";
-        std::cout << std::stoi(parsed_msg.at(1)) << ";" << parsed_msg.at(1) << " on_init: " << ss.str() << std::endl;
+        std::cout << " on_init: " << ss.str() << std::endl;
         do_write(ss.str());
         // }
   
@@ -389,7 +650,7 @@ private:
             tpm_id = tpm_handler.getid(tpm_index);
             
             if(!tpm_handler.increase_iteration(tpm_id)){
-                tpm_handler.reset_tpm(tpm_index);
+                //tpm_handler.reset_tpm(tpm_index);
                 tpm_reset = true;
             }
         }
@@ -399,9 +660,18 @@ private:
             if(tpm_reset){                                                                     // 1 = stop 
                 ss << "4\t" << tpm_id << "\t" << tpm_handler.get_iteration(tpm_id) << "\t" << 0 << "\n";    
             }else{
-                ss << "1\t" << tpm_id << "\t" << tpm_handler.get_iteration(tpm_id) << "\n";
+                
+                
+                
+                
+                ss << tpm_handler.sync_tpm_message_one_advanced(tpm_id, parsed_msg);
+                //ss << "1\t" << tpm_id << "\t" << tpm_handler.get_iteration(tpm_id) << "\n";
             }
-            std::cout << "on_sync: " << ss.str() << std::endl;
+            if(PRINT_SYNC_MESSAGES){
+                std::cout << "on_sync: key_couter=" << tpm_handler.increase_key_counter(tpm_index) << ss.str() << "::::max iterations=" << tpm_handler.get_max_iterations(tpm_index) << std::endl;
+            }else{
+                tpm_handler.increase_key_counter(tpm_index);
+            }
             do_write(ss.str());
         } else{ // must be new machine? but shouldnt be
             
@@ -424,7 +694,7 @@ private:
             tpm_found = true;
             tpm_id = tpm_handler.getid(tpm_index);
             if(!tpm_handler.increase_iteration(tpm_id)){
-              tpm_handler.reset_tpm(tpm_index);
+              //tpm_handler.reset_tpm(tpm_index);
               tpm_found = true;
 
             }
@@ -437,7 +707,9 @@ private:
             if(tpm_reset){                                                                     // 1 = stop 
                 ss << "4\t" << tpm_id << "\t" << tpm_handler.get_iteration(tpm_id) << "\t" << 0 << "\n";    
             }else{
-            ss << "1\t" << tpm_id << "\t" << tpm_handler.get_iteration(tpm_id) << "\n";
+                
+                              
+                ss << tpm_handler.sync_tpm_message_one(tpm_id);
             }
             std::cout << "on_linking: " << ss.str() << std::endl;
             do_write(ss.str());
@@ -469,7 +741,7 @@ private:
        
         if(tpm_found){
             std::stringstream ss;
-            ss << "1\t" << tpm_id << "\t" << tpm_handler.get_iteration(tpm_id) << "\n";
+            ss << tpm_handler.sync_tpm_message_one(tpm_id);
             std::cout << "on_reset: " << ss.str() << std::endl;
             do_write(ss.str());
         }
@@ -504,6 +776,10 @@ private:
         if ( !started() ) return;
         { boost::recursive_mutex::scoped_lock lk(write_lock);
        // boost::recursive_mutex::scoped_lock lk(cs_);        
+        if(msg.length() > MAX_BUFF){
+            std::cout << "msg is too big for buffer see what the problem is, msg length is " << msg.length() << "message is:\n" << msg << std::endl;
+            std::exit(2);
+        }
         std::copy(msg.begin(), msg.end(), write_buffer_);
         sock_.async_write_some( buffer(write_buffer_, msg.size()), MEM_FN2(on_write,_1,_2));
          }
@@ -575,6 +851,12 @@ int main(int argc, char* argv[]) {
    // ip::tcp::endpoint ep(ip::tcp::v4(), 8002);
    // acceptor->open(ip::tcp::v4());
    // acceptor->bind(ep);
+    
+    boost::random::mt19937 gen;
+        boost::random::uniform_int_distribution<> dist(1, 429496729);
+        int random_number = dist(gen);
+
+        srand( random_number );
     
     int listen_port = -1;
     int connect_port = -1;
