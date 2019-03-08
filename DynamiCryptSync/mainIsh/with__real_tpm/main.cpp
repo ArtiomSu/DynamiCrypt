@@ -18,13 +18,17 @@
 #include <mutex>
 #include <fstream>
 
+#include <cryptopp/sha.h>
+#include <cryptopp/filters.h>
+#include <cryptopp/base64.h>
+
 
 #include "tpminputvector.h"
 #include "dynamicarray.h"
 #include "treeparitymachine.h"
 #include "tpmhandler.h"
 
-//g++ main.cpp -lboost_system -lpthread -lboost_thread -lboost_program_options -o sync
+//g++ *.cpp -lboost_system -lpthread -lboost_thread -lboost_program_options -lcryptopp -o sync
 
 using namespace boost::asio;
 using ip::tcp;
@@ -195,6 +199,77 @@ public:
         
          //getWeightValue();
         return ss.str();
+        
+    }
+    
+    std::string SHA256(std::string data){
+        /*std::cout << "crypt 1" <<std::endl;
+        CryptoPP::byte const* pbData = ( CryptoPP::byte*) data.data();
+        std::cout << "crypt 2" <<std::endl;
+         int nDataLen = data.size();
+         std::cout << "crypt 3" <<std::endl;
+         CryptoPP::byte abDigest[CryptoPP::SHA256::DIGESTSIZE];
+        std::cout << "crypt 4" <<std::endl;
+
+
+        CryptoPP::SHA256().CalculateDigest(abDigest, pbData, nDataLen);
+        std::cout << "crypt 5" <<std::endl;
+        
+        std::string return_str = ((char*)abDigest);
+        std::cout << "crypt 6" <<std::endl;
+        std::cout << "crypt 7 : " << return_str <<std::endl;
+         * return return_str;
+         */
+        
+        /*
+        std::string digest;
+        CryptoPP::SHA512 hash;
+
+        CryptoPP::StringSource foo(data, true,
+        new CryptoPP::HashFilter(hash, new CryptoPP::Base64Encoder ( new CryptoPP::StringSink(digest))));
+        std::cout << "crypt 1 : " << digest <<std::endl;
+        return digest;
+         */
+        
+        CryptoPP::byte const* pbData = (CryptoPP::byte*)data.data();
+        unsigned int nDataLen = data.length();
+        CryptoPP::byte abDigest[CryptoPP::SHA256::DIGESTSIZE];
+
+        CryptoPP::SHA256().CalculateDigest(abDigest, pbData, nDataLen);
+
+        std::string raw((char*)abDigest, CryptoPP::SHA256::DIGESTSIZE);
+        
+        static const char* const lut = "0123456789ABCDEF";
+        size_t len = raw.length();
+
+        std::string output;
+        output.reserve(2 * len);
+        for (size_t i = 0; i < len; ++i)
+        {
+          const unsigned char c = raw[i];
+          output.push_back(lut[c >> 4]);
+          output.push_back(lut[c & 15]);
+        }
+        
+        std::cout << "crypt 1 : " << output <<std::endl;
+        return output;
+        
+        
+        
+    }
+    
+    std::string calc_test(std::string randomInput){
+        std::string hashed_key = SHA256(get_key());
+        std::string hashed_input = SHA256(randomInput);
+        
+        std::stringstream ss;
+        for(int i=0; i < hashed_key.length(); i++){
+            ss << hashed_key.at(i) << hashed_input.at(hashed_input.length() -i -1);
+        }
+        
+        return SHA256(ss.str());
+        
+        
         
     }
     
@@ -382,6 +457,10 @@ public:
         return tpm_networks_[index].get_key();
     }
     
+    std::string calc_test(int index, std::string input){
+        return tpm_networks_[index].calc_test(input);
+    }
+    
    
     // when initially synced using on_linking and on_reset
     std::string sync_tpm_message_one(int tpm_id){
@@ -400,6 +479,32 @@ public:
         return ss.str();
         
         // sends random vector and result to said random vector but doesn't update weights.
+        
+    }
+    
+    std::string gen_random_input_for_key(int lengthOfKey){
+        const char Dictionary [] = "0123456789_abcdefghijklmnopqrstuvwxyz{}_()&*!£$%^;:'@#~<>,.?/|;";
+        std::stringstream ss;
+        int previous = -1;
+        int this_time = -1;
+        for(int i=0; i< lengthOfKey; i++){
+            int loop = 1;
+            while(loop){
+                
+                this_time = rand() % (sizeof(Dictionary) -1) ;
+                if(this_time < 0 || this_time == previous){
+                    loop = 1;
+                }else{
+                    loop = 0;
+                }
+                
+                
+            }
+            previous == this_time;
+            //std::cout << this_time << std::endl;
+            ss << Dictionary[previous];
+        }
+        return ss.str();
         
     }
     
@@ -426,7 +531,11 @@ public:
         std::string random_input_vector;
         std::string old_input_vector;
         
+        std::string random_input_for_key;
+        std::string key_hash;
+        
         int processing_message_type_now = std::stoi(parsed_msg.at(6));
+        
         
         
         std::string key;
@@ -450,6 +559,11 @@ public:
             std::cout << "sync_tpm_message_one_advanced-1 before getKey" << std::endl;
             message_type_to_process = 2;
             key = tpm_networks_[index].get_key();
+            std::cout << "tpm key gotten ok"<< std::endl;
+            random_input_for_key = gen_random_input_for_key(50);
+            std::cout << "random_input_gotten_ok"<< std::endl;
+            key_hash = tpm_networks_[index].calc_test(random_input_for_key);
+            std::cout << "key_hash_gotten_ok"<< std::endl;
             std::cout << "sync_tpm_message_one_advanced-1 end" << std::endl;
             //std::cout << "\n\nok\n"; 
         } 
@@ -469,8 +583,19 @@ public:
                 std::string other_key = parsed_msg.at(9);
                 key = tpm_networks_[index].get_key();
                 
+                
+                
                 if (!key.compare(other_key)) {
                     // keys are the same
+                    random_input_for_key = parsed_msg.at(11);
+                    key_hash = parsed_msg.at(10);
+                    
+                    std::string key_hash_this = tpm_networks_[index].calc_test(random_input_for_key);
+                    
+                    if (!key_hash.compare(key_hash_this)) {
+                        std::cout << "hashes match awesome " << key_hash_this << std::endl;
+                    }
+                    
                     std::cout << "found same key: " << key << std::endl;
                     std::exit(1);
                 }
@@ -500,6 +625,9 @@ public:
             random_input_vector = tpm_networks_[index].create_random_input_vector();
             tpm_result = tpm_networks_[index].compute_tpm_result();
             key = tpm_networks_[index].get_key();
+            
+            random_input_for_key = gen_random_input_for_key(50);
+            key_hash = tpm_networks_[index].calc_test(random_input_for_key);
             // send id, id again? lol, iteration, reandom-vector, tpm result,   tell machine to update doesnt matter, message type should be 1 since this is basically the same as sync_tpm_message_one
             message_type_to_process = 2;
             
@@ -510,8 +638,8 @@ public:
         }
        
         // mostly compatible with sync_tpm_message_one message.
-        ss << "1\t" << tpm_id << "\t" << tpm_networks_[index].id() << "\t" << tpm_networks_[index].iteration() <<  "\t" << random_input_vector << "\t" << tpm_result << "\t" << message_type_to_process  << "\t" << tell_machine_to_update<< "\t" << old_input_vector << "\t" << key << "\n";
-        //     0         1                       2                                       3                                      4                           5                                   6                          7                               8                     9
+        ss << "1\t" << tpm_id << "\t" << tpm_networks_[index].id() << "\t" << tpm_networks_[index].iteration() <<  "\t" << random_input_vector << "\t" << tpm_result << "\t" << message_type_to_process  << "\t" << tell_machine_to_update<< "\t" << old_input_vector << "\t" << key << "\t" << key_hash << "\t" << random_input_for_key << "\n";
+        //     0         1                       2                                       3                                      4                           5                                   6                          7                               8                     9                  10                      11
         // parsed message ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         
         
