@@ -16,9 +16,7 @@
 #include <iterator>
 #include <string>
 #include <mutex>
-
-#include <boost/random/mersenne_twister.hpp>
-#include <boost/random/uniform_int_distribution.hpp>
+#include <fstream>
 
 
 #include "tpminputvector.h"
@@ -46,6 +44,7 @@ boost::recursive_mutex write_lock;
 int ping_count = 0;
 
 const int PRINT_SYNC_MESSAGES =1;
+const int SLOW_DOWN = 0;
 
 #define MEM_FN(x)       boost::bind(&self_type::x, shared_from_this())
 #define MEM_FN1(x,y)    boost::bind(&self_type::x, shared_from_this(),y)
@@ -58,9 +57,25 @@ void update_peers_changed();
 class single_tpm_network_handler{
 public: 
     single_tpm_network_handler(int id): iteration_(0), tpm_id_(id), partner_tpm(0), check_for_key_counter(0) {
-       int initK = 8;  // k is hidden neurons	
-       int initN = 10; // n is input neurons
-       int initL = 6;	// range of weights	
+      // int initK = 8;  // k is hidden neurons	
+       //int initN = 10; // n is input neurons
+       //int initL = 6;	// range of weights	
+       
+        //these work somehow
+       //int initK = 4;  // k is hidden neurons	
+       //int initN = 6; // n is input neurons
+       //int initL = 3;	// range of weights	
+        //these work somehow ^^
+        
+       //int initK = 6;  // k is hidden neurons	
+       //int initN = 8; // n is input neurons
+       //int initL = 4;	// range of weights
+       // thse work too ^^^^
+        
+       int initK = 6;  // k is hidden neurons	
+       int initN = 12; // n is input neurons
+       int initL = 4;   // range of weights
+        
         
        tpm.K = initK;
        tpm.N = initN;
@@ -169,7 +184,7 @@ public:
             return ss.str();
         */
         std::stringstream ss;
-        int keys_gen[tpm.K * tpm.N];    
+   
         for (int i=0; i <tpm.K * tpm.N ; i++) {
             ss << tpm.W.Z[i] + tpm.L;
         }
@@ -448,7 +463,7 @@ public:
             if(tell_machine_to_update == 1){
                 old_input_vector = parsed_msg.at(8);
                 tpm_networks_[index].set_random_input_vector_from_string(old_input_vector);
-                //std::cout << "\n\tell_machine_to_update\n";
+                std::cout << "\nupdating machine with this vector \n" << old_input_vector << "\n";
                 tpm_networks_[index].update_weight();
                  
                 std::string other_key = parsed_msg.at(9);
@@ -490,7 +505,9 @@ public:
             
         }
         
-        
+        if(PRINT_SYNC_MESSAGES){
+        std::cout << "\niteration " << tpm_networks_[index].iteration() << "message type: " << message_type_to_process << "tell_machine_to_update " << tell_machine_to_update << "\nkey: " << key << "\nold: " << old_input_vector << "\nnew:" << random_input_vector << "\n\n";  
+        }
        
         // mostly compatible with sync_tpm_message_one message.
         ss << "1\t" << tpm_id << "\t" << tpm_networks_[index].id() << "\t" << tpm_networks_[index].iteration() <<  "\t" << random_input_vector << "\t" << tpm_result << "\t" << message_type_to_process  << "\t" << tell_machine_to_update<< "\t" << old_input_vector << "\t" << key << "\n";
@@ -699,7 +716,7 @@ private:
                 //ss << "1\t" << tpm_id << "\t" << tpm_handler.get_iteration(tpm_id) << "\n";
             }
             if(PRINT_SYNC_MESSAGES){
-                std::cout << "on_sync: key_couter=" << tpm_handler.increase_key_counter(tpm_index) << ss.str() << "::::max iterations=" << tpm_handler.get_max_iterations(tpm_index) << std::endl;
+                std::cout << "on_sync: key_couter=" << tpm_handler.increase_key_counter(tpm_index) << std::endl;
             }else{
                 tpm_handler.increase_key_counter(tpm_index);
             }
@@ -719,7 +736,7 @@ private:
        // { boost::recursive_mutex::scoped_lock lk(read_lock);
         bool tpm_found = false;
         bool tpm_reset = false;
-        int tpm_index = tpm_handler.find_tpm(std::stoi(parsed_msg.at(1)), false);
+        int tpm_index = tpm_handler.find_tpm(std::stoi(parsed_msg.at(3)), false);
         int tpm_id = -1;
         if(tpm_index != -1){
             tpm_found = true;
@@ -757,7 +774,7 @@ private:
     void on_reset(std::vector<std::string> & parsed_msg){
         //{ boost::recursive_mutex::scoped_lock lk(read_lock);
         bool tpm_found = false;      
-        int tpm_index = tpm_handler.find_tpm(std::stoi(parsed_msg.at(1)), false);
+        int tpm_index = tpm_handler.find_tpm(std::stoi(parsed_msg.at(1)), true);
         int tpm_id = -1;
         if(tpm_index != -1){
             tpm_found = true;
@@ -766,7 +783,7 @@ private:
             
             
             tpm_handler.increase_iteration(tpm_id);
-            tpm_handler.set_partner(tpm_id, std::stoi(parsed_msg.at(1)));
+            //tpm_handler.set_partner(tpm_id, std::stoi(parsed_msg.at(1)));
         }     
         
        
@@ -804,6 +821,9 @@ private:
     }
     
     void do_write(const std::string & msg) {
+        if(SLOW_DOWN){
+            boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
+        }
         if ( !started() ) return;
         { boost::recursive_mutex::scoped_lock lk(write_lock);
        // boost::recursive_mutex::scoped_lock lk(cs_);        
@@ -883,11 +903,25 @@ int main(int argc, char* argv[]) {
    // acceptor->open(ip::tcp::v4());
    // acceptor->bind(ep);
     
-    boost::random::mt19937 gen;
-        boost::random::uniform_int_distribution<> dist(1, 429496729);
-        int random_number = dist(gen);
-
-        srand( random_number );
+    unsigned long long int random_value = 0; //Declare value to store data into
+        size_t size = sizeof(random_value); //Declare size of data
+        std::ifstream urandom("/dev/urandom", std::ios::in|std::ios::binary); //Open stream
+        if(urandom) //Check if stream is open
+        {
+            urandom.read(reinterpret_cast<char*>(&random_value), size); //Read from urandom
+            if(!urandom) //Check if stream is ok, read succeeded
+            {
+                std::cerr << "Failed to read from /dev/urandom" << std::endl;
+            }
+            urandom.close(); //close stream
+        }
+        else //Open failed
+            {
+                std::cerr << "Failed to open /dev/urandom" << std::endl;
+        }
+        
+        srand( random_value );
+    
     
     int listen_port = -1;
     int connect_port = -1;
