@@ -1,3 +1,4 @@
+#define BOOST_LOG_DYN_LINK 1
 #include <cstdlib>
 #include <iostream>
 #include <boost/array.hpp>
@@ -22,6 +23,10 @@
 #include <cryptopp/filters.h>
 #include <cryptopp/base64.h>
 
+#include <cstdio>
+#include <memory>
+#include <stdexcept>
+#include <array>
 
 #include "tpminputvector.h"
 #include "dynamicarray.h"
@@ -58,6 +63,20 @@ const int SLOW_DOWN = 0;
 
 void update_peers_changed();
 
+std::string exec(const char* cmd) {
+    std::array<char, 128> buffer;
+    std::string result;
+    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+    if (!pipe) {
+        throw std::runtime_error("popen() failed!");
+    }
+    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+        result += buffer.data();
+    }
+    return result;
+}
+
+
 class single_tpm_network_handler{
 public: 
     single_tpm_network_handler(int id): iteration_(0), tpm_id_(id), partner_tpm(0), check_for_key_counter(0) {
@@ -91,6 +110,35 @@ public:
        max_iterations_ = (tpm.L*tpm.L*tpm.L*tpm.L)*tpm.N*tpm.K;
        
        tmpinputvector.xLength(tpm.K, tpm.N);
+       
+       /*
+       try{  
+           std::stringstream ss;
+           ss << "log_tpm_" << tpm_id_ << "\0";
+           log_file = spdlog::basic_logger_mt<spdlog::async_factory>(ss.str(), ss.str());
+       }
+       catch (const spdlog::spdlog_ex& ex){
+            std::cout << "Log initialization failed: " << ex.what() << std::endl;
+       }
+       */
+       //std::stringstream file_name;
+       std::stringstream ss;
+       std::string term = "gnome-terminal --geometry=95x27 > /dev/null 2>&1;test=\"$(ls /dev/pts)\";inarr=(${test});max=${ar[0]};for n in \"${inarr[@]}\" ; do ((n > max)) && max=$n; done; echo $max";
+       ss << "/dev/pts/";
+       ss << exec(term.c_str());
+       
+       filename = ss.str();
+       filename.erase(std::remove(filename.begin(), filename.end(), '\n'), filename.end());
+       
+       key_log.open(filename, std::ios::out);
+        if (key_log.is_open()){
+            std::cout << "writing to file" << std::endl;
+            key_log << "Tpm Created with id: " << tpm_id_ << "\n";
+        }else{
+            std::cout << "cant write to file:" << filename << ":spacetest" << std::endl;
+            std::exit(2);
+        }
+        key_log.close();
        
        
        
@@ -251,7 +299,7 @@ public:
           output.push_back(lut[c & 15]);
         }
         
-        std::cout << "crypt 1 : " << output <<std::endl;
+        //std::cout << "crypt 1 : " << output <<std::endl;
         return output;
         
         
@@ -338,6 +386,21 @@ public:
         return max_iterations_;
     }
     
+    void add_key_to_proper_keys(std::string key){
+        std::cout << "adding key to proper keys: " << key << std::endl;
+        proper_keys.push_back(key);
+        
+        
+        key_log.open(filename, std::ios::out);
+        if (key_log.is_open()){
+            std::cout << "writing to file" << std::endl;
+            key_log << "tpm_id:" << tpm_id_ << " key:" << key << "\n";
+        }else{
+            std::cout << "cant write to file" << std::endl;
+        }
+        key_log.close();
+    }
+    
 private:
     int iteration_;
     int tpm_id_;
@@ -346,6 +409,10 @@ private:
     TreeParityMachine tpm;
     TPMInputVector tmpinputvector;
     int check_for_key_counter;
+    std::vector<std::string> proper_keys;
+    //auto log_file;
+    std::ofstream key_log;
+    std::string filename;
 };
 
 
@@ -538,7 +605,7 @@ public:
         
         
         
-        std::string key;
+        //std::string key;
         
         if(processing_message_type_now == 1){ // dont update ur weights straight away
             std::string random_vector_received = parsed_msg.at(4);
@@ -558,7 +625,7 @@ public:
             
             std::cout << "sync_tpm_message_one_advanced-1 before getKey" << std::endl;
             message_type_to_process = 2;
-            key = tpm_networks_[index].get_key();
+            //key = tpm_networks_[index].get_key();
             std::cout << "tpm key gotten ok"<< std::endl;
             random_input_for_key = gen_random_input_for_key(50);
             std::cout << "random_input_gotten_ok"<< std::endl;
@@ -581,23 +648,27 @@ public:
                 tpm_networks_[index].update_weight();
                  
                 std::string other_key = parsed_msg.at(9);
-                key = tpm_networks_[index].get_key();
+                //key = tpm_networks_[index].get_key();
+                
+                random_input_for_key = parsed_msg.at(10);
+                key_hash = parsed_msg.at(9);
+                    
+                std::string key_hash_this = tpm_networks_[index].calc_test(random_input_for_key);
                 
                 
                 
-                if (!key.compare(other_key)) {
+                if (!key_hash.compare(key_hash_this)) {
                     // keys are the same
-                    random_input_for_key = parsed_msg.at(11);
-                    key_hash = parsed_msg.at(10);
+
+                    std::cout << "found same key hash : " << key_hash_this << std::endl;
+                    tpm_networks_[index].add_key_to_proper_keys(tpm_networks_[index].get_key());
+                    //std::exit(1);
                     
-                    std::string key_hash_this = tpm_networks_[index].calc_test(random_input_for_key);
-                    
-                    if (!key_hash.compare(key_hash_this)) {
-                        std::cout << "hashes match awesome " << key_hash_this << std::endl;
-                    }
-                    
-                    std::cout << "found same key: " << key << std::endl;
-                    std::exit(1);
+                    // reset tpm
+                    tpm_networks_[index].reset();
+                    ss << "4\t" << tpm_id << "\t" << tpm_networks_[index].iteration() << "\t" << 0 << "\t" << 1 << "\n";
+                    //      0       1                   2                                         3            4 //save current key
+                    return ss.str();
                 }
                 
             }
@@ -624,7 +695,7 @@ public:
            // then continue as normal and send back the result for new vector
             random_input_vector = tpm_networks_[index].create_random_input_vector();
             tpm_result = tpm_networks_[index].compute_tpm_result();
-            key = tpm_networks_[index].get_key();
+            //key = tpm_networks_[index].get_key();
             
             random_input_for_key = gen_random_input_for_key(50);
             key_hash = tpm_networks_[index].calc_test(random_input_for_key);
@@ -634,12 +705,12 @@ public:
         }
         
         if(PRINT_SYNC_MESSAGES){
-        std::cout << "\niteration " << tpm_networks_[index].iteration() << "message type: " << message_type_to_process << "tell_machine_to_update " << tell_machine_to_update << "\nkey: " << key << "\nold: " << old_input_vector << "\nnew:" << random_input_vector << "\n\n";  
+        std::cout << "\niteration " << tpm_networks_[index].iteration() << "message type: " << message_type_to_process << "tell_machine_to_update " << tell_machine_to_update << "\nkey_hashed: " << key_hash << "\nold: " << old_input_vector << "\nnew:" << random_input_vector << "\n\n";  
         }
        
         // mostly compatible with sync_tpm_message_one message.
-        ss << "1\t" << tpm_id << "\t" << tpm_networks_[index].id() << "\t" << tpm_networks_[index].iteration() <<  "\t" << random_input_vector << "\t" << tpm_result << "\t" << message_type_to_process  << "\t" << tell_machine_to_update<< "\t" << old_input_vector << "\t" << key << "\t" << key_hash << "\t" << random_input_for_key << "\n";
-        //     0         1                       2                                       3                                      4                           5                                   6                          7                               8                     9                  10                      11
+        ss << "1\t" << tpm_id << "\t" << tpm_networks_[index].id() << "\t" << tpm_networks_[index].iteration() <<  "\t" << random_input_vector << "\t" << tpm_result << "\t" << message_type_to_process  << "\t" << tell_machine_to_update<< "\t" << old_input_vector << "\t" << key_hash << "\t" << random_input_for_key << "\n";
+        //     0         1                       2                                       3                                      4                           5                                   6                          7                               8                        9                    10                      11
         // parsed message ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
         
         
@@ -834,7 +905,7 @@ private:
         if(tpm_found){
             std::stringstream ss;
             if(tpm_reset){                                                                     // 1 = stop 
-                ss << "4\t" << tpm_id << "\t" << tpm_handler.get_iteration(tpm_id) << "\t" << 0 << "\n";    
+                ss << "4\t" << tpm_id << "\t" << tpm_handler.get_iteration(tpm_id) << "\t" << 0 << "\t" << 0 << "\n";
             }else{
                 
                 
@@ -881,7 +952,7 @@ private:
         if(tpm_found){
             std::stringstream ss;
             if(tpm_reset){                                                                     // 1 = stop 
-                ss << "4\t" << tpm_id << "\t" << tpm_handler.get_iteration(tpm_id) << "\t" << 0 << "\n";    
+                ss << "4\t" << tpm_id << "\t" << tpm_handler.get_iteration(tpm_id) << "\t" << 0 << "\t" << 0 << "\n";
             }else{
                 
                               
@@ -907,6 +978,15 @@ private:
         if(tpm_index != -1){
             tpm_found = true;
             tpm_id = tpm_handler.getid(tpm_index);
+            
+            if(std::stoi(parsed_msg.at(4)) == 1){
+                single_tpm_network_handler *hptr = tpm_handler.get_tpm(tpm_id);
+                hptr->add_key_to_proper_keys(hptr->get_key());
+                std::cout << "second tpm added key to list " << hptr->get_key();
+                //std::exit(1);
+            } 
+            
+            
             tpm_handler.reset_tpm(tpm_index);
             
             
@@ -1024,13 +1104,7 @@ void start_listen(int thread_count) {
         threads.create_thread( listen_thread);
 }
 
-
-int main(int argc, char* argv[]) {
-    //boost::shared_ptr<ip::tcp::acceptor> acceptor(new ip::tcp::acceptor(service));
-   // ip::tcp::endpoint ep(ip::tcp::v4(), 8002);
-   // acceptor->open(ip::tcp::v4());
-   // acceptor->bind(ep);
-    
+void seed_random(){
     unsigned long long int random_value = 0; //Declare value to store data into
         size_t size = sizeof(random_value); //Declare size of data
         std::ifstream urandom("/dev/urandom", std::ios::in|std::ios::binary); //Open stream
@@ -1049,7 +1123,23 @@ int main(int argc, char* argv[]) {
         }
         
         srand( random_value );
-    
+}
+
+
+
+void test_term(){
+    std::string launch_term = "gnome-terminal -e \"bash -c 'tty;pwd;exec $SHELL'\"";
+    std::string ouput = exec(launch_term.c_str());
+    std::cout << "new_term_output = " << ouput << std::endl;
+}
+
+int main(int argc, char* argv[]) {
+    //boost::shared_ptr<ip::tcp::acceptor> acceptor(new ip::tcp::acceptor(service));
+   // ip::tcp::endpoint ep(ip::tcp::v4(), 8002);
+   // acceptor->open(ip::tcp::v4());
+   // acceptor->bind(ep);
+    seed_random();
+    //test_term();
     
     int listen_port = -1;
     int connect_port = -1;
