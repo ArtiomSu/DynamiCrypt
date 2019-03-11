@@ -4,10 +4,10 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>mainIsh/connection_handler/Connection.h</itemPath>
-      <itemPath>mainIsh/connection_handler/ConnectionManager.h</itemPath>
-      <itemPath>bookEcho/seriousClientAndServer/async/coroutine.hpp</itemPath>
-      <itemPath>bookEcho/seriousClientAndServer/async/yield.hpp</itemPath>
+      <itemPath>DynamicArray.hpp</itemPath>
+      <itemPath>TPMInputVector.hpp</itemPath>
+      <itemPath>TpmHandler.hpp</itemPath>
+      <itemPath>TreeParityMachine.hpp</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -16,26 +16,10 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <itemPath>mainIsh/connection_handler/Connection.cpp</itemPath>
-      <itemPath>mainIsh/connection_handler/ConnectionManager.cpp</itemPath>
-      <itemPath>bookEcho/Echo1.cpp</itemPath>
-      <itemPath>mainIsh/before-buffer-handlers.cpp</itemPath>
-      <itemPath>bookEcho/seriousClientAndServer/async/client-using-co-routines.cpp</itemPath>
-      <itemPath>bookEcho/seriousClientAndServer/test/client.cpp</itemPath>
-      <itemPath>bookEcho/seriousClientAndServer/async/client.cpp</itemPath>
-      <itemPath>bookEcho/clientAsync.cpp</itemPath>
-      <itemPath>bookEcho/seriousClientAndServer/clientSync.cpp</itemPath>
-      <itemPath>bookEcho/echoServerSync.cpp</itemPath>
-      <itemPath>mainIsh/main-before-refactor.cpp</itemPath>
+      <itemPath>TPMInputVector.cpp</itemPath>
+      <itemPath>TpmHandler.cpp</itemPath>
+      <itemPath>TreeParityMachine.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
-      <itemPath>mainIsh/main.cpp</itemPath>
-      <itemPath>mainIsh/with__real_tpm/main.cpp</itemPath>
-      <itemPath>netowkingContinued.cpp</itemPath>
-      <itemPath>mainIsh/connection_handler/newmain.cpp</itemPath>
-      <itemPath>bookEcho/seriousClientAndServer/test/server.cpp</itemPath>
-      <itemPath>bookEcho/seriousClientAndServer/async/server.cpp</itemPath>
-      <itemPath>bookEcho/serverAsync.cpp</itemPath>
-      <itemPath>bookEcho/seriousClientAndServer/serverSync.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -46,10 +30,10 @@
                    displayName="Important Files"
                    projectFiles="false"
                    kind="IMPORTANT_FILES_FOLDER">
-      <itemPath>Makefile</itemPath>
+      <itemPath>DynamiCryptSync-Makefile.mk</itemPath>
     </logicalFolder>
   </logicalFolder>
-  <projectmakefile>Makefile</projectmakefile>
+  <projectmakefile>DynamiCryptSync-Makefile.mk</projectmakefile>
   <confs>
     <conf name="Debug" type="1">
       <toolsSet>
@@ -59,105 +43,30 @@
       </toolsSet>
       <compileType>
         <linkerTool>
-          <linkerAddLib>
-            <pElem>/usr/lib</pElem>
-            <pElem>.</pElem>
-          </linkerAddLib>
           <linkerLibItems>
             <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
+            <linkerOptionItem>-lboost_system</linkerOptionItem>
             <linkerOptionItem>-lboost_thread</linkerOptionItem>
+            <linkerOptionItem>-lboost_program_options</linkerOptionItem>
+            <linkerOptionItem>-lcryptopp</linkerOptionItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>
-      <item path="bookEcho/Echo1.cpp" ex="false" tool="1" flavor2="0">
+      <item path="DynamicArray.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="bookEcho/clientAsync.cpp" ex="false" tool="1" flavor2="0">
+      <item path="TPMInputVector.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="bookEcho/echoServerSync.cpp" ex="false" tool="1" flavor2="0">
+      <item path="TPMInputVector.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="bookEcho/seriousClientAndServer/async/client-using-co-routines.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
+      <item path="TpmHandler.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="bookEcho/seriousClientAndServer/async/client.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
+      <item path="TpmHandler.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="bookEcho/seriousClientAndServer/async/coroutine.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
+      <item path="TreeParityMachine.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="bookEcho/seriousClientAndServer/async/server.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="bookEcho/seriousClientAndServer/async/yield.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="bookEcho/seriousClientAndServer/clientSync.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="bookEcho/seriousClientAndServer/serverSync.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="bookEcho/seriousClientAndServer/test/client.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="bookEcho/seriousClientAndServer/test/server.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="bookEcho/serverAsync.cpp" ex="false" tool="1" flavor2="0">
+      <item path="TreeParityMachine.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="mainIsh/before-buffer-handlers.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="mainIsh/connection_handler/Connection.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="mainIsh/connection_handler/Connection.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="mainIsh/connection_handler/ConnectionManager.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="mainIsh/connection_handler/ConnectionManager.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="mainIsh/connection_handler/newmain.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="mainIsh/main-before-refactor.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="mainIsh/main.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="mainIsh/with__real_tpm/main.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="netowkingContinued.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
     <conf name="Release" type="1">
@@ -180,95 +89,21 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
-      <item path="bookEcho/Echo1.cpp" ex="false" tool="1" flavor2="0">
+      <item path="DynamicArray.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="bookEcho/clientAsync.cpp" ex="false" tool="1" flavor2="0">
+      <item path="TPMInputVector.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="bookEcho/echoServerSync.cpp" ex="false" tool="1" flavor2="0">
+      <item path="TPMInputVector.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="bookEcho/seriousClientAndServer/async/client-using-co-routines.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
+      <item path="TpmHandler.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="bookEcho/seriousClientAndServer/async/client.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
+      <item path="TpmHandler.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="bookEcho/seriousClientAndServer/async/coroutine.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
+      <item path="TreeParityMachine.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="bookEcho/seriousClientAndServer/async/server.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="bookEcho/seriousClientAndServer/async/yield.hpp"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="bookEcho/seriousClientAndServer/clientSync.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="bookEcho/seriousClientAndServer/serverSync.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="bookEcho/seriousClientAndServer/test/client.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="bookEcho/seriousClientAndServer/test/server.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="bookEcho/serverAsync.cpp" ex="false" tool="1" flavor2="0">
+      <item path="TreeParityMachine.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="mainIsh/before-buffer-handlers.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="mainIsh/connection_handler/Connection.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="mainIsh/connection_handler/Connection.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="mainIsh/connection_handler/ConnectionManager.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="mainIsh/connection_handler/ConnectionManager.h"
-            ex="false"
-            tool="3"
-            flavor2="0">
-      </item>
-      <item path="mainIsh/connection_handler/newmain.cpp"
-            ex="false"
-            tool="1"
-            flavor2="0">
-      </item>
-      <item path="mainIsh/main-before-refactor.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="mainIsh/main.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="mainIsh/with__real_tpm/main.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="netowkingContinued.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
   </confs>

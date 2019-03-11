@@ -4,22 +4,4 @@
         <activeConfTypeElem>1</activeConfTypeElem>
         <activeConfIndexElem>0</activeConfIndexElem>
     </data>
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
-    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/bookEcho/seriousClientAndServer/async/client-using-co-routines.cpp</file>
-            <file>file:/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/mainIsh/main-before-refactor.cpp</file>
-            <file>file:/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/bookEcho/seriousClientAndServer/async/server.cpp</file>
-            <file>file:/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/mainIsh/before-buffer-handlers.cpp</file>
-            <file>file:/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/mainIsh/connection_handler/ConnectionManager.h</file>
-            <file>file:/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/bookEcho/ssl.cpp</file>
-            <file>file:/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/mainIsh/connection_handler/newmain.cpp</file>
-            <file>file:/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/mainIsh/main.cpp</file>
-            <file>file:/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/mainIsh/main-before-refactor_1.cpp</file>
-            <file>file:/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/bookEcho/seriousClientAndServer/async/client.cpp</file>
-            <file>file:/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/mainIsh/connection_handler/Connection.h</file>
-            <file>file:/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/mainIsh/connection_handler/ConnectionManager.cpp</file>
-            <file>file:/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/mainIsh/connection_handler/Connection.cpp</file>
-        </group>
-    </open-files>
 </project-private>
