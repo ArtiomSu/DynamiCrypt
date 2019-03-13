@@ -35,6 +35,11 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/_ext/9a0c25d/SingleTpmNetworkHandler.o \
+	${OBJECTDIR}/_ext/9a0c25d/System_Helper.o \
+	${OBJECTDIR}/_ext/9a0c25d/TpmNetworkHandler.o \
+	${OBJECTDIR}/_ext/9a0c25d/definitions.o \
+	${OBJECTDIR}/_ext/9a0c25d/peer.o \
 	${OBJECTDIR}/TPMInputVector.o \
 	${OBJECTDIR}/TpmHandler.o \
 	${OBJECTDIR}/TreeParityMachine.o \
@@ -64,6 +69,31 @@ LDLIBSOPTIONS=
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dynamicryptsync: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dynamicryptsync ${OBJECTFILES} ${LDLIBSOPTIONS}
+
+${OBJECTDIR}/_ext/9a0c25d/SingleTpmNetworkHandler.o: /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/SingleTpmNetworkHandler.cpp
+	${MKDIR} -p ${OBJECTDIR}/_ext/9a0c25d
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/9a0c25d/SingleTpmNetworkHandler.o /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/SingleTpmNetworkHandler.cpp
+
+${OBJECTDIR}/_ext/9a0c25d/System_Helper.o: /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/System_Helper.cpp
+	${MKDIR} -p ${OBJECTDIR}/_ext/9a0c25d
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/9a0c25d/System_Helper.o /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/System_Helper.cpp
+
+${OBJECTDIR}/_ext/9a0c25d/TpmNetworkHandler.o: /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/TpmNetworkHandler.cpp
+	${MKDIR} -p ${OBJECTDIR}/_ext/9a0c25d
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/9a0c25d/TpmNetworkHandler.o /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/TpmNetworkHandler.cpp
+
+${OBJECTDIR}/_ext/9a0c25d/definitions.o: /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/definitions.cpp
+	${MKDIR} -p ${OBJECTDIR}/_ext/9a0c25d
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/9a0c25d/definitions.o /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/definitions.cpp
+
+${OBJECTDIR}/_ext/9a0c25d/peer.o: /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/peer.cpp
+	${MKDIR} -p ${OBJECTDIR}/_ext/9a0c25d
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/9a0c25d/peer.o /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/peer.cpp
 
 ${OBJECTDIR}/TPMInputVector.o: TPMInputVector.cpp
 	${MKDIR} -p ${OBJECTDIR}
