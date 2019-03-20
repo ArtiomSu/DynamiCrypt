@@ -42,54 +42,138 @@ void API_service::createDescription() {
 
     auto versionPath = desc.path("/v1");
 
-    auto accountsPath = versionPath.path("/accounts");
+    auto path = versionPath.path("/options");
 
-    accountsPath
-        .route(desc.get("/all"))
-        .bind(&API_service::retrieveAllAccounts, this)
+    path
+        .route(desc.get("/test-ok"))
+        .bind(&API_service::route_test, this)
         .produces(MIME(Application, Json), MIME(Application, Xml))
-        .response(Pistache::Http::Code::Ok, "The list of all account");
-
-    accountsPath
-        .route(desc.get("/:name"), "Retrieve an account")
-        .bind(&API_service::retrieveAccount, this)
-        .produces(MIME(Application, Json))
-        .parameter<Pistache::Rest::Type::String>("name", "The name of the account to retrieve")
-        .response(Pistache::Http::Code::Ok, "The requested account")
-        .response(backendErrorResponse);
-
-    accountsPath
-        .route(desc.post("/:name"), "Create an account")
-        .bind(&API_service::createAccount, this)
+        .response(Pistache::Http::Code::Ok, "ok");
+    
+    path
+        .route(desc.post("/init"), "Initiate Communication")
+        .bind(&API_service::initial, this)
         .produces(MIME(Application, Json))
         .consumes(MIME(Application, Json))
-        .parameter<Pistache::Rest::Type::String>("name", "The name of the account to create")
-        .response(Pistache::Http::Code::Ok, "The initial state of the account")
+        .response(Pistache::Http::Code::Ok, "Initial request")
         .response(backendErrorResponse);
-
-    auto accountPath = accountsPath.path("/:name");
-    accountPath.parameter<Pistache::Rest::Type::String>("name", "The name of the account to operate on");
-
-    accountPath
-        .route(desc.post("/budget"), "Add budget to the account")
-        .bind(&API_service::creditAccount, this)
+    
+    path
+        .route(desc.post("/encrypt"), "Encrypt")
+        .bind(&API_service::encrypt, this)
         .produces(MIME(Application, Json))
-        .response(Pistache::Http::Code::Ok, "Budget has been added to the account")
+        .consumes(MIME(Application, Json))
+        .response(Pistache::Http::Code::Ok, "encrypted")
+        .response(backendErrorResponse);
+    
+    path
+        .route(desc.post("/exit"), "Initiate deletion")
+        .bind(&API_service::leave, this)
+        .produces(MIME(Application, Json))
+        .consumes(MIME(Application, Json))
+        .response(Pistache::Http::Code::Ok, "Bye")
+        .response(backendErrorResponse);
+    
+    path
+        .route(desc.post("/:rest"), "Caught unknown option")
+        .bind(&API_service::the_rest, this)
+        .produces(MIME(Application, Json))
+        .consumes(MIME(Application, Json))
+        .response(Pistache::Http::Code::Ok, "The unknown options")
         .response(backendErrorResponse);
 
 }
 
-void API_service::retrieveAllAccounts(const Pistache::Rest::Request&, Pistache::Http::ResponseWriter response) {
-
-    std::string test = test_api();
-
-    response.send(Pistache::Http::Code::Ok, "No Account " + test);
+void API_service::route_test(const Pistache::Rest::Request&, Pistache::Http::ResponseWriter response) {
+    response.send(Pistache::Http::Code::Ok, "ok");
 }
 
-void API_service::retrieveAccount(const Pistache::Rest::Request&, Pistache::Http::ResponseWriter response) {
-    response.send(Pistache::Http::Code::Ok, "The bank is closed, come back later");
+void API_service::initial(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+    /*
+     maybe have some modes maybe even change these modes for each encryption request?
+     1: speed : same key will be used until new key is generated
+     2: security : same key is never used must wait for new key
+     3: fast security : same key can be used n number of times. n is specified by the client. 
+                        when n keys are used must wait for new key or if less than n keys are used then just use new key straight away.
+     4: super security : split message into pieces and encrypt each piece with different key. Will need to wait for some keys 
+                         and will need to have a certain kind of structure so its possible to decrypt so probably wont be done in time.  
+      
+     need following info 
+     nameOfService of self (maybe id) // better to generate this here though to avoid conflicts
+     nameOfService of other API consumer?
+     address and port of the other sync server
+     
+     
+     send back
+     newly generated id based on the provided service name
+     try launch the peer and if its fine then send ok or something
+     * 
+     * 
+     
+     if this is the one who will be initiating he wont have info from the other dude so give him sum
+     get
+     nameOfservice 
+      
+     
+     send back
+     generated id  
+     port of this sync server
+     
+     then he can send this over to the other API
+       
+     */
+    
+    response.send(Pistache::Http::Code::Ok, "ok");
 }
 
+
+void API_service::encrypt(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+    /*
+     this will probably be the same thing as decrypt
+     get
+     nameOfService/id
+     message 
+     mode
+      
+      
+      
+     keep checking for a key probably best if sleep wasn't used but a well
+     when key found use that key to encrypt and move key to a different variable or something, 
+     maybe use same key again or something while new key is not received
+     depending on the mode.
+     
+     send
+     message
+     mode
+       
+     */
+    response.send(Pistache::Http::Code::Ok, "ok");
+}
+
+
+void API_service::leave(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+    /*
+     get 
+     nameofservice/id
+     tell sync server to stop syncronising. This isn't supported yet maybe try call stop on the peer
+     remove object (no class built yet to handle api service?) and keys and peer itself
+     
+     
+      
+     send
+     nothing really needed so ok will do
+     */
+    
+    response.send(Pistache::Http::Code::Ok, "ok");
+}
+
+
+void API_service::the_rest(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+    // might add some functionality here that sends list of correct routes or something
+    response.send(Pistache::Http::Code::Forbidden, "This is not the route you are looking for");
+}
+
+/*
 void API_service::createAccount(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
     std::cout << "inside Create account";
     rapidjson::Document d;
@@ -113,7 +197,7 @@ void API_service::createAccount(const Pistache::Rest::Request& request, Pistache
 
     rapidjson::Value& p = d["project"];
     p.SetString("ooblock");
-    */
+    
 
 
     //vector<SharedDataContainer> dataContainers = generateTestContainer();
@@ -128,9 +212,8 @@ void API_service::createAccount(const Pistache::Rest::Request& request, Pistache
 
 
 }
+*/
 
-void API_service::creditAccount(const Pistache::Rest::Request&, Pistache::Http::ResponseWriter response) {
-    response.send(Pistache::Http::Code::Ok, "The bank is closed, come back later");
-}
+
     
     
