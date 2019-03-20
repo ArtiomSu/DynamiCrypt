@@ -4,7 +4,12 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>APIServer.h</itemPath>
+      <itemPath>/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/API_service.hpp</itemPath>
       <itemPath>DynamicArray.hpp</itemPath>
+      <itemPath>/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/JSON_helper.hpp</itemPath>
+      <itemPath>/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/SharedData.hpp</itemPath>
+      <itemPath>/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/SharedDataContainer.hpp</itemPath>
       <itemPath>/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/SingleTpmNetworkHandler.hpp</itemPath>
       <itemPath>/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/System_Helper.hpp</itemPath>
       <itemPath>TPMInputVector.hpp</itemPath>
@@ -21,6 +26,9 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <itemPath>APIServer.cpp</itemPath>
+      <itemPath>/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/API_service.cpp</itemPath>
+      <itemPath>/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/JSON_helper.cpp</itemPath>
       <itemPath>/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/SingleTpmNetworkHandler.cpp</itemPath>
       <itemPath>/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/System_Helper.cpp</itemPath>
       <itemPath>TPMInputVector.cpp</itemPath>
@@ -62,6 +70,36 @@
           </linkerLibItems>
         </linkerTool>
       </compileType>
+      <item path="/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/API_service.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/API_service.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/JSON_helper.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/JSON_helper.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/SharedData.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/SharedDataContainer.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/SingleTpmNetworkHandler.cpp"
             ex="false"
             tool="1"
@@ -111,6 +149,10 @@
             ex="false"
             tool="3"
             flavor2="0">
+      </item>
+      <item path="APIServer.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="APIServer.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="DynamicArray.hpp" ex="false" tool="3" flavor2="0">
       </item>
@@ -149,6 +191,36 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
+      <item path="/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/API_service.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/API_service.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/JSON_helper.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/JSON_helper.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/SharedData.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/SharedDataContainer.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="/media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/SingleTpmNetworkHandler.cpp"
             ex="false"
             tool="1"
@@ -198,6 +270,10 @@
             ex="false"
             tool="3"
             flavor2="0">
+      </item>
+      <item path="APIServer.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="APIServer.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="DynamicArray.hpp" ex="false" tool="3" flavor2="0">
       </item>

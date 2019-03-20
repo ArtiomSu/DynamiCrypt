@@ -23,3 +23,8 @@ void update_peers_changed() {
         (*b)->set_peers_changed();
     }
 }
+
+std::string test_api(){
+    std::string test_string = "testing extern string";
+    return test_string;
+}

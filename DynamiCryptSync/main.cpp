@@ -36,18 +36,17 @@
 #include "definitions.hpp"
 #include "peer.hpp"
 
+#include "APIServer.h"
+
 //g++ *.cpp -lboost_system -lpthread -lboost_thread -lboost_program_options -lcryptopp -o sync
+//g++ *.cpp -lboost_system -lpthread -lboost_thread -lboost_program_options -lcryptopp -lpistache -o sync-test
+//./sync-test --listen-port 8003 --api-port 9200
+
 
 using namespace boost::asio;
 using ip::tcp;
 using std::cout;
 using std::endl;
-
-
-//void update_peers_changed();
-
-
-
 
 
 void handle_accept(peer::ptr peer, const boost::system::error_code & err, ip::tcp::acceptor* acceptor) {
@@ -57,7 +56,6 @@ void handle_accept(peer::ptr peer, const boost::system::error_code & err, ip::tc
     std::cout << "handle_accept run test" << std::endl;
     acceptor->async_accept(new_peer->sock(), boost::bind(handle_accept,new_peer,_1,acceptor)); // this 
 }
-
 
 boost::thread_group threads;
 
@@ -102,7 +100,8 @@ int main(int argc, char* argv[]) {
     
     int listen_port = -1;
     int connect_port = -1;
-    char help_message[] = {"sync --listen-port 8001 --connect-port 8002"};
+    int api_port = -1;
+    char help_message[] = {"sync --listen-port 8001 --api-port 9081 --connect-port 8002"};
     try {
 
         boost::program_options::options_description desc("Allowed options");
@@ -110,6 +109,7 @@ int main(int argc, char* argv[]) {
             ("help", help_message)
             ("listen-port", boost::program_options::value<int>(), "set port to listen on")
             ("connect-port", boost::program_options::value<int>(), "set port to connect to")
+            ("api-port", boost::program_options::value<int>(), "set port for API to listen to")
         ;
 
         boost::program_options::variables_map vm;        
@@ -129,8 +129,10 @@ int main(int argc, char* argv[]) {
             connect_port = vm["connect-port"].as<int>();
         } 
         
-        
-        
+        if (vm.count("api-port")) {
+            api_port = vm["api-port"].as<int>();
+        } 
+             
     }
     catch(std::exception& e) {
         std::cerr << "error: " << e.what() << "\n";
@@ -140,7 +142,7 @@ int main(int argc, char* argv[]) {
         std::cerr << "Exception of unknown type!\n";
     }
     
-    if(listen_port == -1){
+    if(listen_port == -1 || api_port == -1){
         std::cout << help_message << std::endl;
         return 0;
     }
@@ -159,5 +161,6 @@ int main(int argc, char* argv[]) {
     }
     
     start_listen(4);
+    APIServer api_server(api_port);
     threads.join_all();
 }

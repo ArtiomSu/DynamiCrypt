@@ -23,6 +23,8 @@
 #include <cstdio>
 #include <string>
 #include <vector>
+#include <algorithm>
+#include <pistache/router.h>
 
 using namespace std;
 using namespace Pistache;

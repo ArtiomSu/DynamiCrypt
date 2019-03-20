@@ -35,11 +35,14 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/_ext/9a0c25d/API_service.o \
+	${OBJECTDIR}/_ext/9a0c25d/JSON_helper.o \
 	${OBJECTDIR}/_ext/9a0c25d/SingleTpmNetworkHandler.o \
 	${OBJECTDIR}/_ext/9a0c25d/System_Helper.o \
 	${OBJECTDIR}/_ext/9a0c25d/TpmNetworkHandler.o \
 	${OBJECTDIR}/_ext/9a0c25d/definitions.o \
 	${OBJECTDIR}/_ext/9a0c25d/peer.o \
+	${OBJECTDIR}/APIServer.o \
 	${OBJECTDIR}/TPMInputVector.o \
 	${OBJECTDIR}/TpmHandler.o \
 	${OBJECTDIR}/TreeParityMachine.o \
@@ -70,6 +73,16 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dynamicryptsync: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dynamicryptsync ${OBJECTFILES} ${LDLIBSOPTIONS}
 
+${OBJECTDIR}/_ext/9a0c25d/API_service.o: /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/API_service.cpp
+	${MKDIR} -p ${OBJECTDIR}/_ext/9a0c25d
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/9a0c25d/API_service.o /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/API_service.cpp
+
+${OBJECTDIR}/_ext/9a0c25d/JSON_helper.o: /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/JSON_helper.cpp
+	${MKDIR} -p ${OBJECTDIR}/_ext/9a0c25d
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/9a0c25d/JSON_helper.o /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/JSON_helper.cpp
+
 ${OBJECTDIR}/_ext/9a0c25d/SingleTpmNetworkHandler.o: /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/SingleTpmNetworkHandler.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/9a0c25d
 	${RM} "$@.d"
@@ -94,6 +107,11 @@ ${OBJECTDIR}/_ext/9a0c25d/peer.o: /media/veracrypt1/CollegeSyncUnison/FYP/code/D
 	${MKDIR} -p ${OBJECTDIR}/_ext/9a0c25d
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/9a0c25d/peer.o /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCryptSync/peer.cpp
+
+${OBJECTDIR}/APIServer.o: APIServer.cpp
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/APIServer.o APIServer.cpp
 
 ${OBJECTDIR}/TPMInputVector.o: TPMInputVector.cpp
 	${MKDIR} -p ${OBJECTDIR}
