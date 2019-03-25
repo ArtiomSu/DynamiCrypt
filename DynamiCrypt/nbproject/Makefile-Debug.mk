@@ -36,6 +36,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/_ext/8cd854a2/API_service.o \
+	${OBJECTDIR}/_ext/8cd854a2/API_service_data_handler.o \
 	${OBJECTDIR}/_ext/8cd854a2/JSON_helper.o \
 	${OBJECTDIR}/_ext/8cd854a2/SingleTpmNetworkHandler.o \
 	${OBJECTDIR}/_ext/8cd854a2/System_Helper.o \
@@ -77,6 +78,11 @@ ${OBJECTDIR}/_ext/8cd854a2/API_service.o: /media/veracrypt1/CollegeSyncUnison/FY
 	${MKDIR} -p ${OBJECTDIR}/_ext/8cd854a2
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/8cd854a2/API_service.o /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/API_service.cpp
+
+${OBJECTDIR}/_ext/8cd854a2/API_service_data_handler.o: /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/API_service_data_handler.cpp
+	${MKDIR} -p ${OBJECTDIR}/_ext/8cd854a2
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/8cd854a2/API_service_data_handler.o /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/API_service_data_handler.cpp
 
 ${OBJECTDIR}/_ext/8cd854a2/JSON_helper.o: /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/JSON_helper.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/8cd854a2

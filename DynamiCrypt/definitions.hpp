@@ -35,6 +35,8 @@ extern boost::asio::io_service service;
 
 extern void update_peers_changed();
 
+extern int begin_sync(std::string address, int port);
+
 extern std::string test_api();
 
 typedef std::vector<boost::shared_ptr<peer>> array; // array of shared pointers to talk_to_client class

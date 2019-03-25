@@ -24,6 +24,12 @@ void update_peers_changed() {
     }
 }
 
+int begin_sync(std::string address, int port){
+    peer::ptr initiating_peer = peer::new_(true, address, port);
+    initiating_peer->start();
+    return 1;
+}
+
 std::string test_api(){
     std::string test_string = "testing extern string";
     return test_string;

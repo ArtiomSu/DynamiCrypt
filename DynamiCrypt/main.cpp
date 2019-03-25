@@ -156,8 +156,7 @@ int main(int argc, char* argv[]) {
     
     if(connect_port != -1){
         std::cout << "sending request" << std::endl;
-        peer::ptr initiating_peer = peer::new_(true, "127.0.0.1", connect_port);
-        initiating_peer->start();
+        begin_sync("127.0.0.1", connect_port);
     }
     
     start_listen(4);
