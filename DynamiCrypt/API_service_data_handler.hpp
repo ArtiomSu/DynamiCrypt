@@ -29,6 +29,34 @@ struct API_data {
     std::vector<key_store> keys_;
 };
 
+class API_service_data_handler{
+public:
+    API_service_data_handler();
+    
+    //return new id
+    std::string new_service(std::string name);
+    
+    std::string new_service(std::string name, std::string name_partner);
+    
+    int update_partner(std::string name, std::string partners_name);
+    
+    int add_key(std::string name, std::string key);
+    
+    std::string crypt(std::string name, std::string message, int mode, int operation);
+    
+    
+    
+private:
+    std::vector<API_data> services;
+    
+    std::string gen_name(std::string name);
+    
+    // get by partner if partner = 1
+    API_data* get_API_data(std::string name, int partner);
+    
+    
+};
+
 
 
 #endif /* API_SERVICE_DATA_HANDLER_HPP */
