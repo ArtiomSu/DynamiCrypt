@@ -21,6 +21,7 @@
 #include <boost/thread/recursive_mutex.hpp>
 #include "peer.hpp"
 #include <vector>
+#include "API_service_data_handler.hpp"
 
 class peer;
 
@@ -42,6 +43,8 @@ extern std::string test_api();
 typedef std::vector<boost::shared_ptr<peer>> array; // array of shared pointers to talk_to_client class
 
 extern array peers;
+
+extern API_service_data_handler api_service_data_handler;
 
 #define MEM_FN(x)       boost::bind(&self_type::x, shared_from_this())
 #define MEM_FN1(x,y)    boost::bind(&self_type::x, shared_from_this(),y)

@@ -17,6 +17,9 @@
 #include <cstdio>
 #include <string>
 #include <vector>
+#include <cryptopp/aes.h>
+#include <cryptopp/modes.h>
+#include <cryptopp/filters.h>
 
 struct key_store {
     std::string key;
@@ -41,7 +44,7 @@ public:
     int update_partner(std::string name, std::string partners_name);
     
     int add_key(std::string name, std::string key);
-    
+                                                                        //encrypt/decrypt
     std::string crypt(std::string name, std::string message, int mode, int operation);
     
     
@@ -53,6 +56,11 @@ private:
     
     // get by partner if partner = 1
     API_data* get_API_data(std::string name, int partner);
+    
+    std::string decrypt(std::string message, CryptoPP::byte key[ CryptoPP::AES::MAX_KEYLENGTH ], CryptoPP::byte iv[ CryptoPP::AES::BLOCKSIZE ]);
+
+    std::string encrypt(std::string message, CryptoPP::byte key[ CryptoPP::AES::MAX_KEYLENGTH ], CryptoPP::byte iv[ CryptoPP::AES::BLOCKSIZE ]);
+
     
     
 };

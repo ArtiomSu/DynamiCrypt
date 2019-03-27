@@ -7,6 +7,7 @@
 #include "API_service.hpp"
 #include "JSON_helper.hpp"
 #include "definitions.hpp"
+#include <string>
 
 void API_service::init(size_t thr = 2) {
     auto opts = Pistache::Http::Endpoint::options()
@@ -127,7 +128,7 @@ void API_service::initial(const Pistache::Rest::Request& request, Pistache::Http
 }
 
 
-void API_service::encrypt(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+void API_service::encrypt(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {  
     /*
      this will probably be the same thing as decrypt
      get
@@ -147,6 +148,17 @@ void API_service::encrypt(const Pistache::Rest::Request& request, Pistache::Http
      mode
        
      */
+    std::string service_name = api_service_data_handler.new_service("Service1", "Partnerservice2");
+    
+    int ok = api_service_data_handler.add_key(service_name, "gdkjghdkh395dksbskjfb39fskfhjkfjh39493457938rskjfh39");
+    
+    if(ok){
+        std::cout << "key added ok" << std::endl;
+    }
+    
+    api_service_data_handler.crypt(service_name,"Hello there Whats the story Hello there Whats the story Hello there Whats the story Hello there Whats the story Hello there Whats the story Hello there Whats the story Hello there Whats the story Hello there Whats the story Hello there Whats the story Hello there Whats the story Hello there Whats the story Hello there Whats the story Hello there Whats the story Hello there Whats the story Hello there Whats the story Hello there Whats the story Hello there Whats the story",1,1);
+    
+    
     response.send(Pistache::Http::Code::Ok, "ok");
 }
 

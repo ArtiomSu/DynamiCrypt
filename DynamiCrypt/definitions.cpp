@@ -9,6 +9,8 @@ boost::asio::io_service service;
 
 array peers;
 
+API_service_data_handler api_service_data_handler;
+
 const int MAX_TPMS_PER_PEER = 1;
 const int MAX_BUFF = 1024;
 const int PRINT_SYNC_MESSAGES =1;

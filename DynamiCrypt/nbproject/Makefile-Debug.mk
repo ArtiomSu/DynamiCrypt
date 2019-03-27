@@ -35,14 +35,14 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/_ext/3cf4b352/API_service.o \
-	${OBJECTDIR}/_ext/3cf4b352/API_service_data_handler.o \
-	${OBJECTDIR}/_ext/3cf4b352/JSON_helper.o \
-	${OBJECTDIR}/_ext/3cf4b352/SingleTpmNetworkHandler.o \
-	${OBJECTDIR}/_ext/3cf4b352/System_Helper.o \
-	${OBJECTDIR}/_ext/3cf4b352/TpmNetworkHandler.o \
-	${OBJECTDIR}/_ext/3cf4b352/definitions.o \
-	${OBJECTDIR}/_ext/3cf4b352/peer.o \
+	${OBJECTDIR}/_ext/8cd854a2/API_service.o \
+	${OBJECTDIR}/_ext/8cd854a2/API_service_data_handler.o \
+	${OBJECTDIR}/_ext/8cd854a2/JSON_helper.o \
+	${OBJECTDIR}/_ext/8cd854a2/SingleTpmNetworkHandler.o \
+	${OBJECTDIR}/_ext/8cd854a2/System_Helper.o \
+	${OBJECTDIR}/_ext/8cd854a2/TpmNetworkHandler.o \
+	${OBJECTDIR}/_ext/8cd854a2/definitions.o \
+	${OBJECTDIR}/_ext/8cd854a2/peer.o \
 	${OBJECTDIR}/APIServer.o \
 	${OBJECTDIR}/TPMInputVector.o \
 	${OBJECTDIR}/TpmHandler.o \
@@ -74,45 +74,45 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dynamicrypt: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dynamicrypt ${OBJECTFILES} ${LDLIBSOPTIONS}
 
-${OBJECTDIR}/_ext/3cf4b352/API_service.o: /mnt/veracrypt1/Sync4thYearCollege/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/API_service.cpp
-	${MKDIR} -p ${OBJECTDIR}/_ext/3cf4b352
+${OBJECTDIR}/_ext/8cd854a2/API_service.o: /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/API_service.cpp
+	${MKDIR} -p ${OBJECTDIR}/_ext/8cd854a2
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3cf4b352/API_service.o /mnt/veracrypt1/Sync4thYearCollege/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/API_service.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/8cd854a2/API_service.o /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/API_service.cpp
 
-${OBJECTDIR}/_ext/3cf4b352/API_service_data_handler.o: /mnt/veracrypt1/Sync4thYearCollege/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/API_service_data_handler.cpp
-	${MKDIR} -p ${OBJECTDIR}/_ext/3cf4b352
+${OBJECTDIR}/_ext/8cd854a2/API_service_data_handler.o: /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/API_service_data_handler.cpp
+	${MKDIR} -p ${OBJECTDIR}/_ext/8cd854a2
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3cf4b352/API_service_data_handler.o /mnt/veracrypt1/Sync4thYearCollege/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/API_service_data_handler.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/8cd854a2/API_service_data_handler.o /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/API_service_data_handler.cpp
 
-${OBJECTDIR}/_ext/3cf4b352/JSON_helper.o: /mnt/veracrypt1/Sync4thYearCollege/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/JSON_helper.cpp
-	${MKDIR} -p ${OBJECTDIR}/_ext/3cf4b352
+${OBJECTDIR}/_ext/8cd854a2/JSON_helper.o: /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/JSON_helper.cpp
+	${MKDIR} -p ${OBJECTDIR}/_ext/8cd854a2
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3cf4b352/JSON_helper.o /mnt/veracrypt1/Sync4thYearCollege/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/JSON_helper.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/8cd854a2/JSON_helper.o /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/JSON_helper.cpp
 
-${OBJECTDIR}/_ext/3cf4b352/SingleTpmNetworkHandler.o: /mnt/veracrypt1/Sync4thYearCollege/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/SingleTpmNetworkHandler.cpp
-	${MKDIR} -p ${OBJECTDIR}/_ext/3cf4b352
+${OBJECTDIR}/_ext/8cd854a2/SingleTpmNetworkHandler.o: /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/SingleTpmNetworkHandler.cpp
+	${MKDIR} -p ${OBJECTDIR}/_ext/8cd854a2
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3cf4b352/SingleTpmNetworkHandler.o /mnt/veracrypt1/Sync4thYearCollege/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/SingleTpmNetworkHandler.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/8cd854a2/SingleTpmNetworkHandler.o /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/SingleTpmNetworkHandler.cpp
 
-${OBJECTDIR}/_ext/3cf4b352/System_Helper.o: /mnt/veracrypt1/Sync4thYearCollege/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/System_Helper.cpp
-	${MKDIR} -p ${OBJECTDIR}/_ext/3cf4b352
+${OBJECTDIR}/_ext/8cd854a2/System_Helper.o: /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/System_Helper.cpp
+	${MKDIR} -p ${OBJECTDIR}/_ext/8cd854a2
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3cf4b352/System_Helper.o /mnt/veracrypt1/Sync4thYearCollege/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/System_Helper.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/8cd854a2/System_Helper.o /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/System_Helper.cpp
 
-${OBJECTDIR}/_ext/3cf4b352/TpmNetworkHandler.o: /mnt/veracrypt1/Sync4thYearCollege/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/TpmNetworkHandler.cpp
-	${MKDIR} -p ${OBJECTDIR}/_ext/3cf4b352
+${OBJECTDIR}/_ext/8cd854a2/TpmNetworkHandler.o: /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/TpmNetworkHandler.cpp
+	${MKDIR} -p ${OBJECTDIR}/_ext/8cd854a2
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3cf4b352/TpmNetworkHandler.o /mnt/veracrypt1/Sync4thYearCollege/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/TpmNetworkHandler.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/8cd854a2/TpmNetworkHandler.o /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/TpmNetworkHandler.cpp
 
-${OBJECTDIR}/_ext/3cf4b352/definitions.o: /mnt/veracrypt1/Sync4thYearCollege/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/definitions.cpp
-	${MKDIR} -p ${OBJECTDIR}/_ext/3cf4b352
+${OBJECTDIR}/_ext/8cd854a2/definitions.o: /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/definitions.cpp
+	${MKDIR} -p ${OBJECTDIR}/_ext/8cd854a2
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3cf4b352/definitions.o /mnt/veracrypt1/Sync4thYearCollege/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/definitions.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/8cd854a2/definitions.o /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/definitions.cpp
 
-${OBJECTDIR}/_ext/3cf4b352/peer.o: /mnt/veracrypt1/Sync4thYearCollege/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/peer.cpp
-	${MKDIR} -p ${OBJECTDIR}/_ext/3cf4b352
+${OBJECTDIR}/_ext/8cd854a2/peer.o: /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/peer.cpp
+	${MKDIR} -p ${OBJECTDIR}/_ext/8cd854a2
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3cf4b352/peer.o /mnt/veracrypt1/Sync4thYearCollege/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/peer.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/8cd854a2/peer.o /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/peer.cpp
 
 ${OBJECTDIR}/APIServer.o: APIServer.cpp
 	${MKDIR} -p ${OBJECTDIR}
