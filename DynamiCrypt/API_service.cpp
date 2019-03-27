@@ -103,6 +103,13 @@ void API_service::initial(const Pistache::Rest::Request& request, Pistache::Http
      nameOfService of self (maybe id) // better to generate this here though to avoid conflicts
      nameOfService of other API consumer?
      address and port of the other sync server
+     * 
+     {
+	"service_name": "service1",
+	"partner_name": "partner1",
+	"address_of_other_tpm": "127.0.0.1",
+	"port_of_other_tpm": 8006
+     }
      
      
      send back
@@ -123,6 +130,45 @@ void API_service::initial(const Pistache::Rest::Request& request, Pistache::Http
      then he can send this over to the other API
        
      */
+    
+    rapidjson::Document document;
+    
+    
+
+    // make into json object
+    char * jsonBody = new char [request.body().length()+1];
+    strcpy (jsonBody, request.body().c_str());
+    document.Parse(jsonBody);
+    
+    //std::cout << jsonBody << std::endl;
+    
+    assert(document.HasMember("service_name"));
+    assert(document["service_name"].IsString());
+    std::cout << "hello = " << document["service_name"].GetString() << std::endl;
+    
+    assert(document.HasMember("partner_name"));
+    assert(document["partner_name"].IsString());
+    std::cout << "partner_name = " << document["partner_name"].GetString() << std::endl;
+    
+    assert(document.HasMember("address_of_other_tpm"));
+    assert(document["address_of_other_tpm"].IsString());
+    std::cout << "address_of_other_tpm = " << document["address_of_other_tpm"].GetString() << std::endl;
+    
+    
+    if(document.HasMember("port_of_other_tpm")){
+        if(document["port_of_other_tpm"].IsNumber() && document["port_of_other_tpm"].IsInt()){
+            std::cout << "port_of_other_tpm = " << document["port_of_other_tpm"].GetInt() << std::endl;
+        }
+    }
+    
+    //assert(document["port_of_other_tpm"].IsNumber());
+    //assert(document["port_of_other_tpm"].IsInt());  
+    //std::cout << "port_of_other_tpm = " << document["port_of_other_tpm"].GetInt() << std::endl; 
+    
+    
+    
+    
+    
     
     response.send(Pistache::Http::Code::Ok, "ok");
 }
