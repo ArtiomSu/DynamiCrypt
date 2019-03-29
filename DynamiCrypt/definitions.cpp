@@ -26,9 +26,14 @@ void update_peers_changed() {
     }
 }
 
-int begin_sync(std::string address, int port){
-    peer::ptr initiating_peer = peer::new_(true, address, port);
-    initiating_peer->start();
+int begin_sync(std::string address, int port, std::string service_name, std::string partner_name){
+    try{
+        peer::ptr initiating_peer = peer::new_(true, address, port);
+        initiating_peer->start(service_name, partner_name);
+    }
+    catch(std::exception& e){
+        return 0;
+    }
     return 1;
 }
 

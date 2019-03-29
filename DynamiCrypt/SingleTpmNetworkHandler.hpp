@@ -33,10 +33,12 @@ private:
     std::vector<std::string> proper_keys;
     //auto log_file;
     std::ofstream key_log;
-    std::string filename;    
+    std::string filename;
+    std::string service_name_;
+    std::string partner_name_;    
     
 public:  
-    SingleTpmNetworkHandler(int id);
+    SingleTpmNetworkHandler(int id, std::string service_name, std::string partner_name);
     
     int iteration(){
         return iteration_;

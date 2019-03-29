@@ -12,12 +12,13 @@
 #include <sstream>
 #include "System_Helper.hpp"
 
-SingleTpmNetworkHandler::SingleTpmNetworkHandler(int id){
+SingleTpmNetworkHandler::SingleTpmNetworkHandler(int id, std::string service_name, std::string partner_name){
     iteration_ = 0;
     tpm_id_ = id;
     partner_tpm = 0;
     check_for_key_counter = 0;
-    
+    service_name_ = service_name;
+    partner_name_ = partner_name;
     int initK = 6;  // k is hidden neurons	
     int initN = 12; // n is input neurons
     int initL = 4;   // range of weights

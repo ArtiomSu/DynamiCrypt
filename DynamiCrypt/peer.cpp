@@ -17,29 +17,37 @@ typedef boost::shared_ptr<peer> ptr;
     sock_ = service;
 }*/
 
-void peer::start(){
+void peer::start(std::string service_name, std::string partner_name){
     { boost::recursive_mutex::scoped_lock lk(read_lock);
         peers.push_back( shared_from_this());
-        }
+    }
         
-        std::cout << " type of peer " << sock_using_ep << std::endl;
-        started_ = true;
-        if(sock_using_ep){ // this makes the connection so write straight away
-            //endpoint_(ip::address::from_string(ip_address_), ip_port_);
-            endpoint_ = boost::make_shared<boost::asio::ip::tcp::endpoint>(boost::asio::ip::address::from_string(ip_address_), ip_port_);
+    std::cout << " type of peer " << sock_using_ep << std::endl;
+    started_ = true;
+    if(sock_using_ep){ // this makes the connection so write straight away
+        //endpoint_(ip::address::from_string(ip_address_), ip_port_);
+        endpoint_ = boost::make_shared<boost::asio::ip::tcp::endpoint>(boost::asio::ip::address::from_string(ip_address_), ip_port_);
+        sock_.async_connect(*endpoint_, MEM_FN3(on_connect,_1,service_name,partner_name));
+        /*try{
+            //sock_.async_connect(*endpoint_, MEM_FN(on_connect_no_error_handling));
             sock_.async_connect(*endpoint_, MEM_FN1(on_connect,_1));
-            
-        } else { // this will listen to connection so read.
-        //boost::recursive_mutex::scoped_lock lk(cs_);
-        do_read();
         }
+        catch(std::exception& e){
+            stop();
+            std::cout << "peer starts exception: " << e.what() << std::endl;
+        }*/
+
+    } else { // this will listen to connection so read.
+    //boost::recursive_mutex::scoped_lock lk(cs_);
+    do_read();
+    }
 }
 
-ptr peer::new_(bool type_of_sock) {
-        boost::shared_ptr<peer> new_(new peer);
-        new_->sock_using_ep = type_of_sock;
-        return new_;
-    }
+ptr peer::new_(bool type_of_sock){
+    boost::shared_ptr<peer> new_(new peer);
+    new_->sock_using_ep = type_of_sock;
+    return new_;
+}
 
 ptr peer::new_(bool type_of_sock, std::string ip_address, int port){
     boost::shared_ptr<peer> new_(new peer);
@@ -105,30 +113,39 @@ void peer::on_read(const error_code & err, size_t bytes){
    // }
 }
 
-void peer::on_connect(const error_code & err){
+void peer::on_connect(const error_code & err, std::string service_name, std::string partner_name){
     //  { boost::recursive_mutex::scoped_lock lk(read_lock);
     //for(int b; b< MAX_TPMS_PER_PEER; b++){ //create 10 tpms
     for(int b=0; b< MAX_TPMS_PER_PEER; b++){ //create 10 tpms
-        int id = tpm_handler.create_new_tpm();
-
+        int id = tpm_handler.create_new_tpm(service_name, partner_name);
 
         if ( !err){      
-            std::stringstream ss;
-            ss << "2\t" << id << "\t" << tpm_handler.get_iteration(id) << "\n";
+            std::stringstream ss;                                               // send self service name
+            ss << "2\t" << id << "\t" << tpm_handler.get_iteration(id) << "\t" << service_name << "\t" << partner_name << "\n";
             std::cout << "on_connect: " << ss.str() << std::endl;
             do_write(ss.str());
         }
         else{
             std::cout << "Error on_connect:" << err.message() << std::endl;
+            api_service_data_handler.remove_service(service_name);
             stop();
+            //throw std::invalid_argument( "cannot connect to tpm" );
         }
     }
    // }
 }
 
+
 void peer::on_init(std::vector<std::string> & parsed_msg){
-    //  { boost::recursive_mutex::scoped_lock lk(read_lock);   
-    int id = tpm_handler.create_new_tpm();
+    //  { boost::recursive_mutex::scoped_lock lk(read_lock);
+    
+    
+            
+    //api_service_data_handler.new_service("self", parsed_msg.at(3));
+    
+    
+    
+    int id = tpm_handler.create_new_tpm(parsed_msg.at(4),parsed_msg.at(3));
     tpm_handler.set_partner(id, std::stoi(parsed_msg.at(1)));
 
 

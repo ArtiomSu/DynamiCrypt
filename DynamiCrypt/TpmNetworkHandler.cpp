@@ -11,13 +11,13 @@ TpmNetworkHandler::TpmNetworkHandler(){
     
 }
 
-int TpmNetworkHandler::create_new_tpm(){
+int TpmNetworkHandler::create_new_tpm(std::string service_name, std::string partner_name){
     int randomId = rand()%5000;
     while(find_tpm(randomId, false) != -1){
         randomId = rand()%5000;
     }
 
-    tpm_networks_.push_back(SingleTpmNetworkHandler(randomId));
+    tpm_networks_.push_back(SingleTpmNetworkHandler(randomId, service_name, partner_name));
     std::cout << "created new tpm with id " << randomId << std::endl;
     return randomId;
 }

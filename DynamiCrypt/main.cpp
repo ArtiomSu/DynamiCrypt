@@ -50,7 +50,7 @@ using std::endl;
 
 
 void handle_accept(peer::ptr peer, const boost::system::error_code & err, ip::tcp::acceptor* acceptor) {
-    peer->start(); // starts current client
+    peer->start("",""); // starts current client
     // creates and listens for new client
     peer::ptr new_peer = peer::new_(false); // false to accepting connection
     std::cout << "handle_accept run test" << std::endl;
@@ -153,12 +153,13 @@ int main(int argc, char* argv[]) {
     peer::ptr initial_peer = peer::new_(false);
     acceptor.async_accept(initial_peer->sock(), boost::bind(handle_accept,initial_peer,_1, &acceptor));
     
-    
+    /*
     if(connect_port != -1){
         std::cout << "sending request" << std::endl;
         begin_sync("127.0.0.1", connect_port);
     }
-    
+    */
+    api_service_data_handler.set_address_and_port_of_sync("127.0.0.1", listen_port);
     start_listen(4);
     APIServer api_server(api_port);
     threads.join_all();

@@ -60,6 +60,30 @@ void API_service::createDescription() {
         .response(backendErrorResponse);
     
     path
+        .route(desc.post("/init_config"), "Initiate Config")
+        .bind(&API_service::initial_config, this)
+        .produces(MIME(Application, Json))
+        .consumes(MIME(Application, Json))
+        .response(Pistache::Http::Code::Ok, "Initial Config")
+        .response(backendErrorResponse);
+    
+    path
+        .route(desc.post("/sync"), "Initiate Sync")
+        .bind(&API_service::sync, this)
+        .produces(MIME(Application, Json))
+        .consumes(MIME(Application, Json))
+        .response(Pistache::Http::Code::Ok, "Begin Sync")
+        .response(backendErrorResponse);
+    
+    path 
+        .route(desc.post("/status"), "check if connected to tpm ok")
+        .bind(&API_service::status, this)
+        .produces(MIME(Application, Json))
+        .consumes(MIME(Application, Json))
+        .response(Pistache::Http::Code::Ok, "status")
+        .response(backendErrorResponse);
+    
+    path
         .route(desc.post("/encrypt"), "Encrypt")
         .bind(&API_service::encrypt, this)
         .produces(MIME(Application, Json))
@@ -131,48 +155,251 @@ void API_service::initial(const Pistache::Rest::Request& request, Pistache::Http
        
      */
     
+    
+    /*
+     called seperately from apps to create service_name
+     then apps must communicate with each other to share this name
+     */
+    
     rapidjson::Document document;
     
-    
-
+   
     // make into json object
     char * jsonBody = new char [request.body().length()+1];
     strcpy (jsonBody, request.body().c_str());
     document.Parse(jsonBody);
     
-    //std::cout << jsonBody << std::endl;
+    std::string service_name;
+    int data_ok = 1;
+
+    if(document.HasMember("service_name")){
+        if(document["service_name"].IsString()){
+            service_name = document["service_name"].GetString();
+        }
+        else{
+            data_ok = 0;
+        }
+    }
+    else{
+        data_ok = 0;
+    }
     
-    assert(document.HasMember("service_name"));
-    assert(document["service_name"].IsString());
-    std::cout << "hello = " << document["service_name"].GetString() << std::endl;
+   
+    std::string respond_service_name;
+    rapidjson::StringBuffer buffera;
+    rapidjson::Writer<rapidjson::StringBuffer> writera(buffera);
     
-    assert(document.HasMember("partner_name"));
-    assert(document["partner_name"].IsString());
-    std::cout << "partner_name = " << document["partner_name"].GetString() << std::endl;
     
-    assert(document.HasMember("address_of_other_tpm"));
-    assert(document["address_of_other_tpm"].IsString());
-    std::cout << "address_of_other_tpm = " << document["address_of_other_tpm"].GetString() << std::endl;
+    if(data_ok){
+        respond_service_name = api_service_data_handler.new_service(service_name);
+        writera.StartObject(); 
+        writera.Key("service_name");                
+        writera.String(respond_service_name.c_str(), respond_service_name.length());
+        writera.Key("address_of_this_tpm");                
+        writera.String(api_service_data_handler.get_sync_address().c_str(), api_service_data_handler.get_sync_address().length());
+        writera.Key("port_of_this_tpm");
+        writera.Uint(api_service_data_handler.get_sync_port());
+        writera.EndObject();
+        
+    }
+    
+    else{//error with request
+        writera.StartObject(); 
+        writera.Key("error");                
+        writera.String("invalid request");
+        writera.EndObject();
+    }
+    
+    response.send(Pistache::Http::Code::Ok, buffera.GetString());
+}
+
+void API_service::initial_config(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+    /*
+     called when apps have gotten each other service name this is used to update said name in api_service_data_handler
+     */
+    rapidjson::Document document;
+    char * jsonBody = new char [request.body().length()+1];
+    strcpy (jsonBody, request.body().c_str());
+    document.Parse(jsonBody);
+    
+    std::string service_name;
+    std::string partner_name;
+    int data_ok = 1;
+    if(document.HasMember("service_name")){
+        if(document["service_name"].IsString()){
+            service_name = document["service_name"].GetString();
+        }
+        else{
+            data_ok = 0;  
+        }
+    }
+    else{
+        data_ok = 0;
+    }
+
+    if(document.HasMember("partner_name")){
+        if(document["partner_name"].IsString()){
+            partner_name = document["partner_name"].GetString();
+        }else{
+            data_ok = 0;  
+        }
+    }
+    else{
+        data_ok = 0;
+    }
+    
+    rapidjson::StringBuffer buffera;
+    rapidjson::Writer<rapidjson::StringBuffer> writera(buffera);
+    
+    if(data_ok){
+        if(api_service_data_handler.check_service(service_name)){
+            api_service_data_handler.update_partner(service_name, partner_name);
+            writera.StartObject(); 
+            writera.Key("status");                
+            writera.Uint(1);
+            writera.EndObject();
+        }else{
+            writera.StartObject(); 
+            writera.Key("status");                
+            writera.Uint(0);
+            writera.EndObject();
+        }
+    }
+    else{//error with request
+        writera.StartObject(); 
+        writera.Key("error");                
+        writera.String("invalid request");
+        writera.EndObject();
+    }
+    
+    response.send(Pistache::Http::Code::Ok, buffera.GetString());
+}
+
+void API_service::sync(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+    /*
+     one app essentially calls this to begin sync. 
+     however app must check if sync servers connected ok by calling the status route.
+     
+     if sync servers not connected then whole process must begin again by generating new name.
+     Its prob ok to leave the partner name as is. 
+     
+      
+    */
+    rapidjson::Document document;
+    char * jsonBody = new char [request.body().length()+1];
+    strcpy (jsonBody, request.body().c_str());
+    document.Parse(jsonBody);
+    
+    std::string service_name;
+    std::string partner_name;
+    std::string address_of_other_tpm;
+    int port_of_other_tpm;
+    
+    int data_ok = 1;
+    
+    if(document.HasMember("service_name")){
+        if(document["service_name"].IsString()){
+            service_name = document["service_name"].GetString();
+        }
+        else{
+            data_ok = 0;
+        }
+    }
+    else{
+        data_ok = 0;
+    }
+    
+   
+    if(document.HasMember("partner_name")){
+        if(document["partner_name"].IsString()){
+            partner_name = document["partner_name"].GetString();
+        }
+        else{
+            data_ok = 0;
+        }
+    }
+    else{
+        data_ok = 0;
+    }
+    
+    if(document.HasMember("address_of_other_tpm")){
+        if(document["address_of_other_tpm"].IsString()){
+            address_of_other_tpm = document["address_of_other_tpm"].GetString();
+        }
+        else{
+            data_ok = 0;
+        }
+    }
+    else{
+        data_ok = 0;
+    }
     
     
     if(document.HasMember("port_of_other_tpm")){
         if(document["port_of_other_tpm"].IsNumber() && document["port_of_other_tpm"].IsInt()){
-            std::cout << "port_of_other_tpm = " << document["port_of_other_tpm"].GetInt() << std::endl;
+            port_of_other_tpm = document["port_of_other_tpm"].GetInt();
+        }
+        else{
+            data_ok = 0;
         }
     }
+    else{
+        data_ok = 0;
+    }
     
-    //assert(document["port_of_other_tpm"].IsNumber());
-    //assert(document["port_of_other_tpm"].IsInt());  
-    //std::cout << "port_of_other_tpm = " << document["port_of_other_tpm"].GetInt() << std::endl; 
+    rapidjson::StringBuffer buffera;
+    rapidjson::Writer<rapidjson::StringBuffer> writera(buffera);
     
+    if(data_ok){
+        begin_sync(address_of_other_tpm, port_of_other_tpm, service_name, partner_name);
+        writera.StartObject(); 
+        writera.Key("status");                
+        writera.Uint(1);
+        writera.EndObject();
+    }else{
+        writera.StartObject(); 
+        writera.Key("error");                
+        writera.String("invalid request");
+        writera.EndObject();
+    }
     
+    response.send(Pistache::Http::Code::Ok, buffera.GetString());
     
-    
-    
-    
-    response.send(Pistache::Http::Code::Ok, "ok");
 }
 
+
+void API_service::status(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+    /*
+     Due to callback pattern it is necessary for the client to see if the connection between the tpms was successful
+     if not then address or port could be wrong. 
+     
+     this will be done by checking if the server_name exists. 
+     
+     */
+    rapidjson::StringBuffer buffera;
+    rapidjson::Writer<rapidjson::StringBuffer> writera(buffera);
+    rapidjson::Document document;
+    char * jsonBody = new char [request.body().length()+1];
+    strcpy (jsonBody, request.body().c_str());
+    document.Parse(jsonBody);
+    
+    int ok = 0;
+    
+    if(document.HasMember("service_name")){
+        if(document["service_name"].IsString()){
+            if(api_service_data_handler.check_service(document["service_name"].GetString())){
+                ok = 1;
+            }
+        }
+    }
+
+    writera.StartObject();                
+    writera.Key("status");
+    writera.Uint(ok);
+    writera.EndObject();
+
+    response.send(Pistache::Http::Code::Ok, buffera.GetString());
+}
 
 void API_service::encrypt(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {  
     /*

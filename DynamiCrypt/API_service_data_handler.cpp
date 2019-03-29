@@ -153,6 +153,30 @@ std::string API_service_data_handler::crypt(std::string name, std::string messag
     }
 }
 
+void API_service_data_handler::set_address_and_port_of_sync(std::string address, int port){
+    sync_address = address;
+    sync_port = port;
+}
+
+int API_service_data_handler::remove_service(std::string service_name){
+    for(int i=0; i< services.size(); i++){
+           if(!services.at(i).service_name_.compare(service_name)){
+               services.erase(services.begin() + i);
+               return 1;
+            }   
+    }
+    return 0;
+}
+
+int API_service_data_handler::check_service(std::string service_name){
+    for(int i=0; i< services.size(); i++){
+           if(!services.at(i).service_name_.compare(service_name)){
+               return 1;
+            }   
+    }
+    return 0;
+}
+
 
 
 // private

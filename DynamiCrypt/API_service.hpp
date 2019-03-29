@@ -45,6 +45,8 @@ private:
     void createDescription();
 
     void initial(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
+    
+    void status(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
 
     void the_rest(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
     
@@ -53,6 +55,10 @@ private:
     void route_test(const Pistache::Rest::Request&, Pistache::Http::ResponseWriter response);
     
     void leave(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
+    
+    void initial_config(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
+    
+    void sync(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
     
     std::shared_ptr<Pistache::Http::Endpoint> httpEndpoint;
     Pistache::Rest::Description desc;

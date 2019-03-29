@@ -47,10 +47,21 @@ public:
                                                                         //encrypt/decrypt
     std::string crypt(std::string name, std::string message, int mode, int operation);
     
+    void set_address_and_port_of_sync(std::string address, int port);
+    
+    std::string get_sync_address(){return sync_address;}
+    
+    int get_sync_port(){return sync_port;}
+    
+    int remove_service(std::string service_name);
+    
+    int check_service(std::string service_name);
     
     
 private:
     std::vector<API_data> services;
+    std::string sync_address;
+    int sync_port;
     
     std::string gen_name(std::string name);
     

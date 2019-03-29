@@ -36,7 +36,7 @@ extern boost::asio::io_service service;
 
 extern void update_peers_changed();
 
-extern int begin_sync(std::string address, int port);
+extern int begin_sync(std::string address, int port, std::string service_name, std::string partner_name);
 
 extern std::string test_api();
 

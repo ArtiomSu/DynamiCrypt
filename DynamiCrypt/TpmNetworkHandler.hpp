@@ -25,7 +25,7 @@ private:
 public:
     TpmNetworkHandler();
     
-    int create_new_tpm();
+    int create_new_tpm(std::string service_name, std::string partner_name);
     
     int find_tpm(int id, bool find_partner);
     

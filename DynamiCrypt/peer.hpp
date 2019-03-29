@@ -49,7 +49,7 @@ public:
     typedef boost::system::error_code error_code;
     typedef boost::shared_ptr<peer> ptr;
 
-    void start();
+    void start(std::string service_name, std::string partner_name);
     
     static ptr new_(bool type_of_sock);
     
@@ -75,7 +75,7 @@ public:
 private:
     void on_read(const error_code & err, size_t bytes);
     
-    void on_connect(const error_code & err);
+    void on_connect(const error_code & err, std::string service_name, std::string partner_name);
     
     void on_init(std::vector<std::string> & parsed_msg);
     
