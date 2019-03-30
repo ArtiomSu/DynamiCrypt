@@ -1,3 +1,7 @@
 /DynamiCrypt/dist/
 /DynamiCrypt/build/
 /DynamiCrypt/nbproject/
+/NodeApp/node_modules/
+/NodeApp/package-lock.json
+/DynamiCrypt/sync
+/DynamiCrypt/sync-test

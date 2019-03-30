@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+DEBUG=nodeapp:* PORT=$1 node app.js

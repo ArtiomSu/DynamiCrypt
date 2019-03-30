@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>DynamiCrypt Demo</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="javascripts/Form_handler.js"></script>
+  </head>
+  <body>
+  <% if (!show_service_form) { %>
+  <form method="get" action="/show_service_form" novalidate>
+      <button type="submit">show_service_form</button>
+  </form>
+  <% } %>
+
+    <h1>DynamiCrypt Demo</h1>
+    <% if (locals.current_service_name) { %>
+    <h3>Selected Service Name is <%= current_service_name %></h3>
+    <% } %>
+
+    <% if (show_service_form) { %>
+    <form method="post" action="/form_get_service_name" novalidate>
+        <label for="Service_name">Service_name</label>
+        <input  name="Service_name"></input><br/>
+        <label for="API_port">API_port</label>
+        <input  name="API_port"></input><br/>
+        <label for="API_Address">API_Address</label>
+        <input  name="API_Address"></input><br/>
+        <button type="submit">Send</button>
+    </form>
+    <% } %>
+
+  </body>
+  <p><%= logs_at_bottom_of_screen %></p>
+
+</html>
