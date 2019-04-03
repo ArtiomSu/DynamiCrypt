@@ -22,6 +22,10 @@
 #include "peer.hpp"
 #include <vector>
 #include "API_service_data_handler.hpp"
+#include <cryptopp/sha.h>
+#include <cryptopp/filters.h>
+#include <cryptopp/base64.h>
+#include <sstream>
 
 class peer;
 
@@ -37,6 +41,8 @@ extern boost::asio::io_service service;
 extern void update_peers_changed();
 
 extern int begin_sync(std::string address, int port, std::string service_name, std::string partner_name);
+
+extern std::string hash_with_sha_256(std::string data);
 
 extern std::string test_api();
 

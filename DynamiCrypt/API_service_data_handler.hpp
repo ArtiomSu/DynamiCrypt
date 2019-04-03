@@ -44,8 +44,8 @@ public:
     int update_partner(std::string name, std::string partners_name);
     
     int add_key(std::string name, std::string key);
-                                                                        //encrypt/decrypt
-    std::string crypt(std::string name, std::string message, int mode, int operation);
+                                                                                         //encrypt/decrypt
+    std::string crypt(std::string name, std::string message, std::string hash, int mode, int operation);
     
     void set_address_and_port_of_sync(std::string address, int port);
     
@@ -72,6 +72,11 @@ private:
 
     std::string encrypt(std::string message, CryptoPP::byte key[ CryptoPP::AES::MAX_KEYLENGTH ], CryptoPP::byte iv[ CryptoPP::AES::BLOCKSIZE ]);
 
+    void gen_key(std::string string_key, CryptoPP::byte* key);
+    
+    std::string encode_base64(const std::string data);
+    
+    std::string decode_base64(const std::string& input, std::string& out);
     
     
 };

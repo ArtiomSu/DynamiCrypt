@@ -109,7 +109,7 @@ void API_service::createDescription() {
 
 }
 
-void API_service::route_test(const Pistache::Rest::Request&, Pistache::Http::ResponseWriter response) {
+void API_service::route_test(const Pistache::Rest::Request&, Pistache::Http::ResponseWriter response) {  
     response.send(Pistache::Http::Code::Ok, "ok");
 }
 
@@ -408,7 +408,8 @@ void API_service::encrypt(const Pistache::Rest::Request& request, Pistache::Http
      nameOfService/id
      message 
      mode
-      
+     operation
+     hash need hash if operation is decrypt 
       
       
      keep checking for a key probably best if sleep wasn't used but a well
@@ -421,18 +422,121 @@ void API_service::encrypt(const Pistache::Rest::Request& request, Pistache::Http
      mode
        
      */
-    std::string service_name = api_service_data_handler.new_service("Service1", "Partnerservice2");
+    rapidjson::Document document;
+    char * jsonBody = new char [request.body().length()+1];
+    strcpy (jsonBody, request.body().c_str());
+    document.Parse(jsonBody);
     
-    int ok = api_service_data_handler.add_key(service_name, "gdkjghdkh395dksbskjfb39fskfhjkfjh39493457938rskjfh39");
+    std::string service_name;
+    std::string message;
+    std::string hash = "";
+    int mode;
+    int operation; // encrypt 0, decrypt 1
     
-    if(ok){
-        std::cout << "key added ok" << std::endl;
+    int data_ok = 1;
+    
+    if(document.HasMember("service_name")){
+        if(document["service_name"].IsString()){
+            service_name = document["service_name"].GetString();
+        }
+        else{
+            data_ok = 0;
+        }
+    }
+    else{
+        data_ok = 0;
     }
     
-    api_service_data_handler.crypt(service_name,"Hello there Whats the story Hello there Whats the story Hello there Whats the story Hello there Whats the story Hello there Whats the story Hello there Whats the story Hello there Whats the story Hello there Whats the story Hello there Whats the story Hello there Whats the story Hello there Whats the story Hello there Whats the story Hello there Whats the story Hello there Whats the story Hello there Whats the story Hello there Whats the story Hello there Whats the story",1,1);
+    
+    if(document.HasMember("message")){
+        if(document["message"].IsString()){
+            message = document["message"].GetString();
+        }
+        else{
+            data_ok = 0;
+        }
+    }
+    else{
+        data_ok = 0;
+    }
     
     
-    response.send(Pistache::Http::Code::Ok, "ok");
+    if(document.HasMember("mode")){
+        if(document["mode"].IsNumber() && document["mode"].IsInt()){
+            mode = document["mode"].GetInt();
+        }
+        else{
+            data_ok = 0;
+        }
+    }
+    else{
+        data_ok = 0;
+    }
+    
+    if(document.HasMember("operation")){
+        if(document["operation"].IsNumber() && document["operation"].IsInt()){
+            operation = document["operation"].GetInt();
+        }
+        else{
+            data_ok = 0;
+        }
+    }
+    else{
+        data_ok = 0;
+    }
+    
+    if(document.HasMember("hash")){
+        if(document["hash"].IsString()){
+            hash = document["hash"].GetString();
+        }
+        else{
+            data_ok = 0;
+        }
+    }
+    else if(data_ok && operation == 0){ // hash should only be here if operation is decrypt 
+        data_ok = 1;
+    }else{
+        data_ok = 0;
+    }
+    
+    
+    
+    
+    rapidjson::StringBuffer buffera;
+    rapidjson::Writer<rapidjson::StringBuffer> writera(buffera);
+    
+    if(data_ok){
+        std::string result = api_service_data_handler.crypt(service_name, message, hash, mode, operation);
+        if(result == "error"){
+            writera.StartObject(); 
+            writera.Key("error");                
+            writera.String("service not found");
+            writera.EndObject();
+        }else{
+            writera.StartObject();
+            writera.Key("message");                
+            writera.String(result.c_str(), result.length());
+            if(operation == 0){ //send hash when encrypting
+            writera.Key("hash");
+            std::string temp = hash_with_sha_256(message);
+            writera.String(temp.c_str(), temp.length());
+            }
+            writera.Key("mode");
+            writera.Uint(mode);
+            writera.EndObject();
+        }
+    } else{
+        writera.StartObject(); 
+        writera.Key("error");                
+        writera.String("invalid request");
+        writera.EndObject();
+    }
+    
+    
+    
+    
+    
+    response.send(Pistache::Http::Code::Ok,  buffera.GetString());
 }
 
 
@@ -455,7 +559,12 @@ void API_service::leave(const Pistache::Rest::Request& request, Pistache::Http::
 
 void API_service::the_rest(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
     // might add some functionality here that sends list of correct routes or something
-    response.send(Pistache::Http::Code::Forbidden, "This is not the route you are looking for");
+    
+    //std::string service_name= api_service_data_handler.new_service("Service1", "Partnerservice2");
+    
+    //int ok = api_service_data_handler.add_key(service_name, "gdkjghdkh395dksbskjfb39fskfhjkfjh39493457938rskjfh39");
+    
+    response.send(Pistache::Http::Code::Forbidden, "This is not the route you are looking for ");
 }
 
 /*

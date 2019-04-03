@@ -1,5 +1,3 @@
-
-
 #include "SingleTpmNetworkHandler.hpp"
 #include <string>
 #include <iostream>
@@ -11,6 +9,7 @@
 #include <cryptopp/base64.h>
 #include <sstream>
 #include "System_Helper.hpp"
+#include "definitions.hpp"
 
 SingleTpmNetworkHandler::SingleTpmNetworkHandler(int id, std::string service_name, std::string partner_name){
     iteration_ = 0;
@@ -166,7 +165,11 @@ void SingleTpmNetworkHandler::update_weight(){
         
 void SingleTpmNetworkHandler::add_key_to_proper_keys(std::string key){
     std::cout << "adding key to proper keys: " << key << std::endl;
-    proper_keys.push_back(key);
+    
+    //no need to add to objects storage for now
+    //proper_keys.push_back(key);
+    
+    api_service_data_handler.add_key(service_name_, key);
 
 
     key_log.open(filename, std::ios::out);
