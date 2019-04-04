@@ -74,9 +74,9 @@ private:
 
     void gen_key(std::string string_key, CryptoPP::byte* key);
     
-    std::string encode_base64(const std::string data);
+    std::string encode_base64(std::string for_encode);
     
-    std::string decode_base64(const std::string& input, std::string& out);
+    std::string decode_base64(std::string message);
     
     
 };
