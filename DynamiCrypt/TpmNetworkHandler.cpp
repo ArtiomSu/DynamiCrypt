@@ -124,7 +124,9 @@ std::string TpmNetworkHandler::sync_tpm_message_one(int tpm_id){
     //     0         1                       2                                       3                                      4                           5                  6 messagetype to process
     // parsed message ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+    if(PRINT_SYNC_MESSAGES){
     std::cout << "sync_tpm_message_one end" << std::endl;
+    }
     return ss.str();
 
     // sends random vector and result to said random vector but doesn't update weights.
@@ -202,15 +204,23 @@ std::string TpmNetworkHandler::sync_tpm_message_one_advanced(int tpm_id, std::ve
         random_input_vector = tpm_networks_[index].create_random_input_vector();
         tpm_result = tpm_networks_[index].compute_tpm_result();
 
+        if(PRINT_SYNC_MESSAGES){
         std::cout << "sync_tpm_message_one_advanced-1 before getKey" << std::endl;
+        }
         message_type_to_process = 2;
         //key = tpm_networks_[index].get_key();
+        if(PRINT_SYNC_MESSAGES){
         std::cout << "tpm key gotten ok"<< std::endl;
+        }
         random_input_for_key = gen_random_input_for_key(50);
+        if(PRINT_SYNC_MESSAGES){
         std::cout << "random_input_gotten_ok"<< std::endl;
+        }
         key_hash = tpm_networks_[index].calc_test(random_input_for_key);
+        if(PRINT_SYNC_MESSAGES){
         std::cout << "key_hash_gotten_ok"<< std::endl;
         std::cout << "sync_tpm_message_one_advanced-1 end" << std::endl;
+        }
         //std::cout << "\n\nok\n"; 
     } 
 
@@ -223,7 +233,9 @@ std::string TpmNetworkHandler::sync_tpm_message_one_advanced(int tpm_id, std::ve
         if(tell_machine_to_update == 1){
             old_input_vector = parsed_msg.at(8);
             tpm_networks_[index].set_random_input_vector_from_string(old_input_vector);
+            if(PRINT_SYNC_MESSAGES){
             std::cout << "\nupdating machine with this vector \n" << old_input_vector << "\n";
+            }
             tpm_networks_[index].update_weight();
 
             std::string other_key = parsed_msg.at(9);
@@ -238,8 +250,9 @@ std::string TpmNetworkHandler::sync_tpm_message_one_advanced(int tpm_id, std::ve
 
             if (!key_hash.compare(key_hash_this)) {
                 // keys are the same
-
+                if(PRINT_SYNC_MESSAGES){
                 std::cout << "found same key hash : " << key_hash_this << std::endl;
+                }
                 tpm_networks_[index].add_key_to_proper_keys(tpm_networks_[index].get_key());
                 //std::exit(1);
 

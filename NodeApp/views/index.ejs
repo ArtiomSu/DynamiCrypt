@@ -3,14 +3,17 @@
   <head>
     <title>DynamiCrypt Demo</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="javascripts/jquery.min.js"></script>
     <script src="javascripts/Form_handler.js"></script>
   </head>
 
   <div id="container">
 
       <div id="header">
+
+
           <div id="buttons_push">
+              <h1 id="appname">DynamiCrypt Demo</h1>
               <% if (!show_service_form) { %>
                   <form method="get" action="/show_service_form" novalidate>
                       <button class="header_button" type="submit">show_service_form</button>
@@ -32,46 +35,90 @@
       <div id="body">
           <body>
 
+              <div id="content">
 
-              <h1>DynamiCrypt Demo</h1>
+                  <% if (locals.current_service_name) { %>
+                  <h3>Selected Service Name is <%= current_service_name %></h3>
+                  <% } %>
 
-              <% if (locals.current_service_name) { %>
-              <h3>Selected Service Name is <%= current_service_name %></h3>
-              <% } %>
-
-              <% if (locals.current_partner_name) { %>
-                  <h4>Currrently communicating with other App service called <%= current_partner_name %></h4>
-              <% } %>
-
+                  <% if (locals.current_partner_name) { %>
+                      <h4>Currrently communicating with other App service called <%= current_partner_name %></h4>
+                  <% } %>
 
 
-              <% if (show_service_form) { %>
-              <form method="post" action="/form_get_service_name" novalidate>
-                    <label for="Service_name">Service_name</label>
-                    <input  name="Service_name"></input><br/>
-                    <label for="API_port">API_port</label>
-                    <input  name="API_port"></input><br/>
-                    <label for="API_Address">API_Address</label>
-                    <input  name="API_Address"></input><br/>
-                    <button class="submit_button" type="submit">Send</button>
-              </form>
-              <% } %>
 
-              <% if (show_partner_form) { %>
-                  <form method="post" action="/form_send_to_partner" novalidate>
-                      <label for="port">Other node App port</label>
-                      <input  name="port"></input><br/>
-                      <label for="address">other node App address</label>
-                      <input  name="address"></input><br/>
-                      <button class="submit_button" type="submit">Send</button>
+                  <% if (show_service_form) { %>
+                  <form method="post" action="/form_get_service_name" novalidate>
+                        <label for="Service_name">Service_name</label>
+                        <input  name="Service_name"></input><br/>
+                        <label for="API_port">API_port</label>
+                        <input  name="API_port"></input><br/>
+                        <label for="API_Address">API_Address</label>
+                        <input  name="API_Address"></input><br/>
+                        <button class="submit_button" type="submit">Send</button>
                   </form>
-              <% } %>
+                  <% } %>
+
+                  <% if (show_partner_form) { %>
+                      <form method="post" action="/form_send_to_partner" novalidate>
+                          <label for="port">Other node App port</label>
+                          <input  name="port"></input><br/>
+                          <label for="address">other node App address</label>
+                          <input  name="address"></input><br/>
+                          <button class="submit_button" type="submit">Send</button>
+                      </form>
+                  <% } %>
+
+                   <% if (show_message_box) { %>
+                       <form method="post" action="/encrypt" novalidate>
+                         <label id="message_label" for="message">Type message here</label><br/>
+                              <textarea id="message_box"  name="message" rows="4" cols="65"></textarea><br/>
+                           <label id="encrypt_mode_label" for="encrypt_mode">Select Encryption mode</label><br/>
+                           <select id="encrypt_mode_select" name="encrypt_mode">
+                               <option value="1">Fast: will use same key until new key is generated (i.e always use latest key)</option>
+                               <option value="2">Secure: will only use a key once (i.e never use key that was used before)</option>
+                           </select><br/>
+                           <button class="submit_button" type="submit">Send</button>
+                          </form>
+                      <% } %>
+
+
+
+              </div>
 
 
           </body>
       </div>
 
       <div id="footer">
+          <div id="table_heading_wrapper">
+              <div id="table_heading_description"><span class="messages_sent" >Blue</span> messages are what this App sent. <span class="messages_received" >Green</span> messages are what this App received. <span class="messages_failed" >Red</span> messages are ones that failed to decrypt.</div>
+
+              <table class="messages_table">
+                  <tr>
+                      <td class="messages_table_number">#</td>
+                      <td class="messages_table_text_encrypted text_center" >Encrypted message</td>
+                      <td class="messages_table_text_decrypted text_center">Decrypted message</td>
+                  </tr>
+              </table>
+
+              <!--<div id="table_heading_num">#</div>
+              <div id="table_heading_Encrypted">Encrypted message</div>
+              <div id="table_heading_Decrypted">Decrypted message</div>
+              -->
+          </div>
+          <div id="messages_div">
+              <table class="messages_table">
+                  <% for (var i = 0; i < messages_info.length; i++) { %>
+                      <tr <% if ( messages_info[i].received == 0) { %>class="messages_sent" <% } else if ( messages_info[i].received == 2) { %>class="messages_failed" <% } else { %>class="messages_received" <% } %> >
+                          <td class="messages_table_number"><%= i %></td>
+                          <td class="messages_table_text_encrypted" ><%= messages_info[i].encrypted %></td>
+                          <td class="messages_table_text_decrypted"><%= messages_info[i].decrypted %></td>
+                      </tr>
+                  <% } %>
+              </table>
+
+          </div>
           <footer>
               <div id="logging"><%- logs_at_bottom_of_screen %></div>
           </footer>
