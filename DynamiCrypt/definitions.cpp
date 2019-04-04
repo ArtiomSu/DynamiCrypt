@@ -16,6 +16,12 @@ const int MAX_BUFF = 1024;
 const int PRINT_SYNC_MESSAGES =0; // 0 to disable sync messages as they can be quite spammy
 const int SLOW_DOWN = 0;
 
+const std::string DYNAMICRYPT_API_WAIT = "DYNAMICRYPT_API_WAIT0b064b133c7d17706b05ca8076a2910be7a47b07feafe23655739bfb3a7302f5";
+const std::string DYNAMICRYPT_API_FAILED_DECRYPT = "DYNAMICRYPT_API_FAILED_DECRYPTae8481c771da94b1274b177107ead49bbf7a116b61b8faecd1525b83e71b833b";
+const std::string DYNAMICRYPT_API_ERROR = "DYNAMICRYPT_API_ERROR8074bae01e05967ef783344437a68677ba1fd4eaf7371199f4bb289d80fbf04e";
+
+const int PRINT_API_CRYPT_MESSAGES = 1;
+
 void update_peers_changed() {
     array copy;
     { boost::recursive_mutex::scoped_lock lk(read_lock);

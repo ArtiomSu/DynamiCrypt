@@ -507,12 +507,24 @@ void API_service::encrypt(const Pistache::Rest::Request& request, Pistache::Http
     
     if(data_ok){
         std::string result = api_service_data_handler.crypt(service_name, message, hash, mode, operation);
-        if(result == "error"){
+        if(result == DYNAMICRYPT_API_ERROR){
             writera.StartObject(); 
             writera.Key("error");                
-            writera.String("service not found");
+            writera.String("service_not_found");
             writera.EndObject();
-        }else{
+        }else if(result == DYNAMICRYPT_API_WAIT){
+            writera.StartObject(); 
+            writera.Key("error");                
+            writera.String("wait");
+            writera.EndObject();
+        }
+        else if(result == DYNAMICRYPT_API_FAILED_DECRYPT){
+            writera.StartObject(); 
+            writera.Key("error");                
+            writera.String("failed_decrypt");
+            writera.EndObject();
+        }
+        else{
             writera.StartObject();
             writera.Key("message");                
             writera.String(result.c_str(), result.length());

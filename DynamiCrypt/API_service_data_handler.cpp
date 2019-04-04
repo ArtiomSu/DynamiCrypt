@@ -74,21 +74,54 @@ std::string API_service_data_handler::crypt(std::string name, std::string messag
         
         if(operation == 0){ // encrypt
              //speed - same key until new key recieved
+            
+            std::string string_key;
             if(mode == 1){
+                //check for any latest key 
+                if(api_data->keys_.size() == 0){
+                    return DYNAMICRYPT_API_WAIT;
+                }else{
+                    string_key = api_data->keys_.back().key;
+                    api_data->keys_.back().uses ++;
+                    if(PRINT_API_CRYPT_MESSAGES){
+                        std::cout << "got key like this " << string_key << std::endl;
+                        std::cout << "key was used " << api_data->keys_.back().uses << " times" << std::endl;
+                    }
+                }
             
             }
             //security - different key each time
             else if (mode == 2){
-            
+                if(api_data->keys_.size() == 0){
+                    return DYNAMICRYPT_API_WAIT;
+                }
+                else{
+                    int attempts_to_find_key = 0; //search max_attempts_to_decrypt times for the key since decrypt will only search for max_attempts_to_decrypt times too
+                    int found_key = 0;
+                    for(int number_of_keys = api_data->keys_.size()-1; number_of_keys >= 0; number_of_keys --){
+                        if(attempts_to_find_key == max_attempts_to_decrypt){
+                            break;
+                        }
+                        attempts_to_find_key ++;
+                        if(api_data->keys_.at(number_of_keys).uses == 0){
+                            string_key = api_data->keys_.at(number_of_keys).key;
+                            api_data->keys_.at(number_of_keys).uses++;
+                            if(PRINT_API_CRYPT_MESSAGES){
+                                std::cout << "got key like this " << string_key << std::endl;
+                                std::cout << "key was used " << api_data->keys_.at(number_of_keys).uses << " times" << std::endl;
+                            }
+                            found_key = 1;
+                            break;
+                        }
+                    }
+                    if(!found_key){
+                        return DYNAMICRYPT_API_WAIT;
+                    }
+                }
             }
-            std::string string_key = api_data->keys_.back().key;
-               
-        
-            std::cout << "got key like this " << string_key << std::endl;
-            std::cout << "key was used " << api_data->keys_.back().uses << " times" << std::endl;
-
-            api_data->keys_.back().uses ++;
-
+            if(PRINT_API_CRYPT_MESSAGES){
+                std::cout << "keyring size for service " << name << " = " << api_data->keys_.size() << std::endl;
+            } 
             // need to get shorten the key to make 256 bit key or byte array of 32
             // perform some additions or something
 
@@ -107,43 +140,123 @@ std::string API_service_data_handler::crypt(std::string name, std::string messag
 
 
         }else{ // decrypt
-            //decode message 
-            std::cout << "encoded message received = " << message << std::endl;
-            
+            //decode message
+            if(PRINT_API_CRYPT_MESSAGES){
+                std::cout << "encoded message received = " << message << std::endl;
+            }
             std::string decoded_message = decode_base64(message);
 
-            
+            //try to use whichever key is last
             if(mode == 1){
-            
+                if(api_data->keys_.size() == 0){
+                    return DYNAMICRYPT_API_WAIT; // no keys in key ring shouldn't happen with decrypt if used properly
+                }
+                int number_of_keys = api_data->keys_.size()-1;  // maybe change to keys_.size()-1
+                for(int decrypt_loop = 0; decrypt_loop<max_attempts_to_decrypt; decrypt_loop++){
+                    //try last key first
+                    std::string string_key = api_data->keys_.at(number_of_keys).key;
+                    if(PRINT_API_CRYPT_MESSAGES){
+                        std::cout << "trying to decrypt with key " << string_key << std::endl;
+                        std::cout << "key was used " << api_data->keys_.at(number_of_keys).uses << " times" << std::endl;
+                    }
+                    CryptoPP::byte key[ CryptoPP::AES::MAX_KEYLENGTH ];
+                    gen_key(string_key,key);
+
+                    output = decrypt(decoded_message, key, iv);
+                    if(!hash_with_sha_256(output).compare(hash)){ //decrypted successfully
+                        api_data->keys_.at(number_of_keys).uses ++;
+                        break;
+                    }
+
+                    if(number_of_keys == 0){
+                        //output = "failed";
+                        return DYNAMICRYPT_API_FAILED_DECRYPT;
+                        break;
+                    }
+
+                    number_of_keys --;
+                
+                }
             }
             //security - different key each time
-            else if (mode == 2){
+            else if (mode == 2){ // try keys with 0 uses first
+                std::string string_key;
+                if(api_data->keys_.size() == 0){
+                    return DYNAMICRYPT_API_WAIT; // no keys in key ring shouldn't happen with decrypt if used properly
+                }
+                int has_skipped_keys = 0;
+                int number_of_keys = api_data->keys_.size()-1;  // maybe change to keys_.size()-1
+                
+                //std::cout << "number_of_keys at start " << number_of_keys << std::endl;
+                std::vector<int> skipped_keys;
+                for(int decrypt_loop = 0; decrypt_loop<max_attempts_to_decrypt; decrypt_loop++){
+                    //std::cout << "decrypt_loop at start " << decrypt_loop << std::endl;
+                    if(number_of_keys == -1){ // needed because of the continue which could cause number_of_keys to be -1
+                        break;
+                    }
+                    
+                    if(api_data->keys_.at(number_of_keys).uses == 0){
+                        
+                        string_key = api_data->keys_.at(number_of_keys).key;
+                        //std::cout << "key with 0 uses found " << string_key << std::endl;
+                    }else{
+                        skipped_keys.push_back(number_of_keys);
+                        //std::cout << "skipping key at index " << number_of_keys << std::endl;
+                        number_of_keys --;
+                        has_skipped_keys = 1;
+                        
+                        continue;
+                    }
+                    
+                    if(PRINT_API_CRYPT_MESSAGES){
+                        std::cout << "trying to decrypt with key " << string_key << std::endl;
+                        std::cout << "key was used " << api_data->keys_.at(number_of_keys).uses << " times" << std::endl;
+                    }
+                    CryptoPP::byte key[ CryptoPP::AES::MAX_KEYLENGTH ];
+                    gen_key(string_key,key);
+
+                    output = decrypt(decoded_message, key, iv);
+                    if(!hash_with_sha_256(output).compare(hash)){ //decrypted successfully
+                        api_data->keys_.at(number_of_keys).uses ++;
+                        return output;
+                    }
+
+                    if(number_of_keys == 0){
+                        break;
+                    }
+
+                    number_of_keys --;
+                
+                }
+                //code runs here only if decryption was unsuccessful
+                if(has_skipped_keys){ //check for skipped keys
+                    for(int i = 0; i < skipped_keys.size(); i ++ ){
+                        string_key = api_data->keys_.at(i).key;
+                        if(PRINT_API_CRYPT_MESSAGES){
+                            std::cout << "trying to decrypt with key " << string_key << std::endl;
+                            std::cout << "key was used " << api_data->keys_.at(i).uses << " times" << std::endl;
+                        }
+                        CryptoPP::byte key[ CryptoPP::AES::MAX_KEYLENGTH ];
+                        gen_key(string_key,key);
+
+                        output = decrypt(decoded_message, key, iv);
+                        if(!hash_with_sha_256(output).compare(hash)){ //decrypted successfully
+                            api_data->keys_.at(i).uses ++;
+                            return output;
+                        }
+                    }
+                    // if key not decrypted then code is continued here therefore
+                    //output = "failed";
+                    return DYNAMICRYPT_API_FAILED_DECRYPT;
+                }else{
+                    //output = "failed";
+                    return DYNAMICRYPT_API_FAILED_DECRYPT;
+                }
+                
+                
+                
+            }
             
-            }
-            //loop for mode 1
-            int number_of_keys = api_data->keys_.size()-1;  // maybe change to keys_.size()-1
-            for(int decrypt_loop = 0; decrypt_loop<max_attempts_to_decrypt; decrypt_loop++){
-                 //try last key first
-                std::string string_key = api_data->keys_.at(number_of_keys).key;
-                std::cout << "trying to decrypt with key " << string_key << std::endl;
-                std::cout << "key was used " << api_data->keys_.at(number_of_keys).uses << " times" << std::endl;
-                CryptoPP::byte key[ CryptoPP::AES::MAX_KEYLENGTH ];
-                gen_key(string_key,key);
-                
-                output = decrypt(decoded_message, key, iv);
-                if(!hash_with_sha_256(output).compare(hash)){ //decrypted successfully
-                    api_data->keys_.at(number_of_keys).uses ++;
-                    break;
-                }
-                
-                if(number_of_keys == 0){
-                    output = "failed";
-                    break;
-                }
-                
-                number_of_keys --;
-                
-            }
             
             
         }
@@ -151,7 +264,7 @@ std::string API_service_data_handler::crypt(std::string name, std::string messag
         return output;
     }
     else{
-        return "error";
+        return DYNAMICRYPT_API_ERROR;
     }
 }
 
@@ -234,17 +347,16 @@ std::string API_service_data_handler::encrypt(std::string message, CryptoPP::byt
     stfEncryptor.Put( reinterpret_cast<const unsigned char*>( message.c_str() ), message.length() );
     stfEncryptor.MessageEnd();
 
-    //
-    // Dump Cipher Text
-    //
-    std::cout << "Cipher Text (" << ciphertext.size() << " bytes)" << std::endl;
+    if(PRINT_API_CRYPT_MESSAGES){
+        std::cout << "Cipher Text (" << ciphertext.size() << " bytes)" << std::endl;
 
-    for( int i = 0; i < ciphertext.size(); i++ ) {
+        for( int i = 0; i < ciphertext.size(); i++ ) {
 
-        std::cout << "0x" << std::hex << (0xFF & static_cast<CryptoPP::byte>(ciphertext[i])) << " ";
+            std::cout << "0x" << std::hex << (0xFF & static_cast<CryptoPP::byte>(ciphertext[i])) << " ";
+        }
+
+        std::cout << std::endl << std::endl;
     }
-
-    std::cout << std::endl << std::endl;
     
     return ciphertext;
     
@@ -259,12 +371,11 @@ std::string API_service_data_handler::decrypt(std::string message, CryptoPP::byt
     stfDecryptor.Put( reinterpret_cast<const unsigned char*>( message.c_str() ), message.size() );
     stfDecryptor.MessageEnd();
 
-    //
-    // Dump Decrypted Text
-    //
-    std::cout << "Decrypted Text: " << std::endl;
-    std::cout << decryptedtext;
-    std::cout << std::endl << std::endl;
+    if(PRINT_API_CRYPT_MESSAGES){
+        std::cout << "Decrypted Text: " << std::endl;
+        std::cout << decryptedtext;
+        std::cout << std::endl << std::endl;
+    }
     
     return decryptedtext;
         
@@ -294,19 +405,20 @@ void API_service_data_handler::gen_key(std::string string_key, CryptoPP::byte* k
             string_count ++;
         } 
 
+        if(PRINT_API_CRYPT_MESSAGES){
+            std::cout << "key int is ";
 
-        std::cout << "key int is ";
 
-        
-        for(int i=0; i < CryptoPP::AES::MAX_KEYLENGTH; i++){
-            
-            std::cout << int(key[i]) << ",";
+            for(int i=0; i < CryptoPP::AES::MAX_KEYLENGTH; i++){
+
+                std::cout << int(key[i]) << ",";
+            }
+
+
+            std::cout << std::endl;
+
+            std::cout << "key char is " << key << std::endl;
         }
-
-
-        std::cout << std::endl;
-        
-        std::cout << "key char is " << key << std::endl;
         
 }
 
@@ -332,7 +444,9 @@ std::string API_service_data_handler::encode_base64(std::string for_encode) {
         encoder.Get((CryptoPP::byte*)&encoded[0], encoded.size());
     }
 
-    std::cout << "encoded message after encryption = " << encoded << std::endl; 
+    if(PRINT_API_CRYPT_MESSAGES){
+        std::cout << "encoded message after encryption = " << encoded << std::endl; 
+    }
     
     return encoded;
 }
