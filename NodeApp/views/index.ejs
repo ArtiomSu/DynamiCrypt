@@ -22,7 +22,13 @@
 
               <% if (can_start_sync) { %>
                   <form method="get" action="/start_sync" novalidate>
-                      <button class="header_button" type="submit">start sync</button>
+                      <button class="header_button_important " type="submit">start sync</button>
+                  </form>
+              <% } %>
+
+              <% if (show_stop_sync) { %>
+                  <form method="get" action="/stop_sync" novalidate>
+                      <button class="header_button_important" type="submit">stop sync</button>
                   </form>
               <% } %>
 
@@ -50,11 +56,11 @@
                   <% if (show_service_form) { %>
                   <form method="post" action="/form_get_service_name" novalidate>
                         <label for="Service_name">Service_name</label>
-                        <input  name="Service_name"></input><br/>
+                        <input class="test_empty" type="text" name="Service_name" autofocus></input><br/>
                         <label for="API_port">API_port</label>
-                        <input  name="API_port"></input><br/>
+                        <input class="test_empty" type="number" name="API_port"></input><br/>
                         <label for="API_Address">API_Address</label>
-                        <input  name="API_Address"></input><br/>
+                        <input class="test_empty" type="text" name="API_Address"></input><br/>
                         <button class="submit_button" type="submit">Send</button>
                   </form>
                   <% } %>
@@ -62,9 +68,9 @@
                   <% if (show_partner_form) { %>
                       <form method="post" action="/form_send_to_partner" novalidate>
                           <label for="port">Other node App port</label>
-                          <input  name="port"></input><br/>
+                          <input class="test_empty" type="number" name="port" autofocus></input><br/>
                           <label for="address">other node App address</label>
-                          <input  name="address"></input><br/>
+                          <input class="test_empty" type="text" name="address"></input><br/>
                           <button class="submit_button" type="submit">Send</button>
                       </form>
                   <% } %>
@@ -72,7 +78,7 @@
                    <% if (show_message_box) { %>
                        <form method="post" action="/encrypt" novalidate>
                          <label id="message_label" for="message">Type message here</label><br/>
-                              <textarea id="message_box"  name="message" rows="4" cols="65"></textarea><br/>
+                              <textarea class="test_empty" id="message_box"  name="message" rows="4" cols="65" autofocus></textarea><br/>
                            <label id="encrypt_mode_label" for="encrypt_mode">Select Encryption mode</label><br/>
                            <select id="encrypt_mode_select" name="encrypt_mode">
                                <option value="1">Fast: will use same key until new key is generated (i.e always use latest key)</option>

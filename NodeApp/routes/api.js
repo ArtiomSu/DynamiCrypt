@@ -14,6 +14,8 @@ var show_message_box = false;
 var current_service_name = null;
 var current_partner_name = null;
 var can_start_sync = false;
+var sync_is_running = false;
+var show_stop_sync = false;
 var logs_at_bottom_of_screen = "";
 var services = {};
 
@@ -47,7 +49,9 @@ router.get('/', function(req, res, next) {
         current_partner_name: current_partner_name,
         can_start_sync: can_start_sync,
         messages_info: messages_info,
-        show_message_box: show_message_box
+        show_message_box: show_message_box,
+        sync_is_running: sync_is_running,
+        show_stop_sync: show_stop_sync,
     });
 });
 
@@ -61,14 +65,16 @@ router.get('/reset_all_variables', function(req, res, next) {
     messages_info = [];
     logs_at_bottom_of_screen += "<p class='log_ok'>/reset_all_variables variables are now reset</p>";
     show_message_box = false;
-    res.redirect('/');
+    sync_is_running = false;
+    show_stop_sync = false;
+    return res.redirect('/');
 });
 
 router.get('/show_service_form', function(req, res, next) {
     show_service_form = true;
     show_partner_form = false;
     console.log("button clicked ", show_service_form);
-    res.redirect('/');
+    return res.redirect('/');
 });
 
 //get data from init api route.
@@ -121,7 +127,7 @@ router.post('/form_get_service_name', function (req,res,next) {
             };
         }
         //console.log(services[current_service_name]);
-        res.redirect('/');
+        return res.redirect('/');
     });
 });
 
@@ -129,7 +135,7 @@ router.post('/form_send_to_partner', function (req,res,next) {
     // other app already submitted request so no need to do anything here
     if(show_partner_form === false){
         logs_at_bottom_of_screen += "<p class='log_warn_not_severe'>/form_send_to_partner other node APP already submitted this request and details are shared</p>";
-        res.redirect('/');
+        return res.redirect('/');
     }
 
     var data = req.body;
@@ -157,7 +163,7 @@ router.post('/form_send_to_partner', function (req,res,next) {
         if(error){
             logs_at_bottom_of_screen += "<p class='log_error'>failed to connect to other node APP at /get_details </p>";
             show_partner_form = true;
-            res.redirect('/');
+            return res.redirect('/');
         }else{
 
             services[aproporiate_service].address_of_partner_tpm = body.address_of_this_tpm;
@@ -178,16 +184,16 @@ router.post('/form_send_to_partner', function (req,res,next) {
                 console.log("body", body);
                 if(error){
                     logs_at_bottom_of_screen += "<p class='log_error'>failed to connect to API /v1/options/init_config</p>";
-                    res.redirect('/');
+                    return res.redirect('/');
                 }else{
                     if(body.status === 0){
                         // failed to update
                         logs_at_bottom_of_screen += "<p class='log_error'>failed to update partner name API /v1/options/init_config</p>";
-                        res.redirect('/');
+                        return res.redirect('/');
                     }else{
                         can_start_sync = true;
                         show_message_box = true;
-                        res.redirect('/');
+                        return res.redirect('/');
                     }
                 }
             });
@@ -249,7 +255,7 @@ router.post('/get_details', function (req,res,next) {
 
 router.get('/start_sync', function(req, res, next) {
     if(can_start_sync === false){
-        res.redirect('/');
+        return res.redirect('/');
     }
     can_start_sync = false;
     request({
@@ -261,16 +267,19 @@ router.get('/start_sync', function(req, res, next) {
         console.log("body", body);
         if(error){
             logs_at_bottom_of_screen += "<p class='log_error'>failed to connect to API /v1/options/sync</p>";
-            res.redirect('/');
+            can_start_sync = true;
+            return res.redirect('/');
         }else{
             if(body.status === 0){
                 // failed to update
+                can_start_sync = true;
                 logs_at_bottom_of_screen += "<p class='log_error'>failed to start sync API /v1/options/sync</p>";
 
             }else{
-
+                sync_is_running = true;
+                show_stop_sync = true;
             }
-            res.redirect('/');
+            return res.redirect('/');
         }
     });
 });
@@ -280,7 +289,7 @@ router.post('/encrypt', function (req,res,next) {
     //console.log("current service ", current_service_name);
     //console.log(services);
     if(show_message_box === false){
-        res.redirect('/');
+        return res.redirect('/');
     }
     var data = req.body;
 
@@ -298,17 +307,17 @@ router.post('/encrypt', function (req,res,next) {
         console.log("body", body);
         if(error){
             logs_at_bottom_of_screen += "<p class='log_error'>failed to connect to API /v1/options/encrypt</p>";
-            res.redirect('/');
+            return res.redirect('/');
         }else{
             if(body.error === DYNAMICRYPT_API_ERROR_WAIT){
                 logs_at_bottom_of_screen += "<p class='log_warn_not_severe'>no suitable keys found going to waiting</p>";
-                res.redirect('/');
+                return res.redirect('/');
             }else if(body.error === DYNAMICRYPT_API_ERROR_SERVICE_404){
                 logs_at_bottom_of_screen += "<p class='log_error'>API /v1/options/encrypt service name not found</p>";
-                res.redirect('/');
+                return res.redirect('/');
             }else if(body.error === DYNAMICRYPT_API_ERROR_DECRYPTION){
                 logs_at_bottom_of_screen += "<p class='log_error'>API /v1/options/encrypt failed to decrypt</p>";
-                res.redirect('/');
+                return res.redirect('/');
             }else{
                 //encrypted ok
                 var encrypted_text = body.message;
@@ -325,27 +334,27 @@ router.post('/encrypt', function (req,res,next) {
                 }, function (error, response, body) {
                     if(error){
                         logs_at_bottom_of_screen += "<p class='log_error'>failed to connect to other node APP at /decrypt </p>";
-                        res.redirect('/');
+                        return res.redirect('/');
                     }else{
                         if(body.error === "not ready"){
                             logs_at_bottom_of_screen += "<p class='log_warn_not_severe'>other node APP at /decrypt is not ready to take decryption requests </p>";
-                            res.redirect('/');
+                            return res.redirect('/');
                         }else if(body.error === "failed_to_connect"){
                             logs_at_bottom_of_screen += "<p class='log_error'>other node App failed to connect to API /v1/options/encrypt</p>";
-                            res.redirect('/');
+                            return res.redirect('/');
                         }
                         else if(body.error === "no_keys_found"){
                             logs_at_bottom_of_screen += "<p class='log_warn_not_severe'>other node APP no suitable keys found for decryption going to waiting (shouldn't happen)</p>";
-                            res.redirect('/');
+                            return res.redirect('/');
                         }
                         else if(body.error === "service_name_not_found"){
                             logs_at_bottom_of_screen += "<p class='log_error'>other node App /v1/options/encrypt service name not found</p>";
-                            res.redirect('/');
+                            return res.redirect('/');
                         }
                         else if(body.error === "failed_decrypt"){
                             logs_at_bottom_of_screen += "<p class='log_error'>other node App /v1/options/encrypt failed to decrypt</p>";
                             messages_info.push({encrypted: encrypted_text, decrypted: message, received: 2});
-                            res.redirect('/');
+                            return res.redirect('/');
                         }
 
                         //decrypted ok
@@ -355,7 +364,7 @@ router.post('/encrypt', function (req,res,next) {
                             logs_at_bottom_of_screen += "<p class='log_error'>API /v1/options/encrypt failed to decrypt unknown error"+body.why+"</p>";
                         }
 
-                        res.redirect('/');
+                        return res.redirect('/');
                     }
                 });
 
@@ -410,6 +419,9 @@ router.post('/decrypt', function (req,res,next) {
                 //encrypted ok
                 var plaintext = body.message;
                 if(body.message){
+                    // second nodejs app that didnt start the sync will only know if sync is running if it decrypts something successfully.
+                    sync_is_running = true;
+                    show_stop_sync = true;
                     console.log("decrypted message ok: ", plaintext);
                     messages_info.push({encrypted: message, decrypted: plaintext, received: 1});
 
@@ -420,17 +432,77 @@ router.post('/decrypt', function (req,res,next) {
                     res.json({status: "not_good", why: body});
                 }
 
-
-
             }
-
 
         }
 
     });
 
+});
+
+router.get('/stop_sync', function(req, res, next) {
+    if(sync_is_running === false){
+        return res.redirect('/');
+    }
+    request({
+        url: "http://"+services[current_service_name].api_address+":"+services[current_service_name].api_port+"/v1/options/exit",
+        method: 'POST',
+        json: {service_name: services[current_service_name].service_name}
+    }, function (error, response, body) {
+        console.log("error", error);
+        console.log("body", body);
+        if(error){
+            logs_at_bottom_of_screen += "<p class='log_error'>failed to connect to API /v1/options/exit</p>";
+            return res.redirect('/');
+        }else{
+            if(body.status === "ok"){
+
+                //tell other node app sync stopped
+                request({
+                    url: "http://"+services[current_service_name].partner_address+":"+services[current_service_name].partner_port+"/stop_sync_inform_other_node_app",
+                    method: 'GET'
+                }, function (error, response, body) {
+
+                });
+
+                logs_at_bottom_of_screen += "<p class='log_ok'>successfully stopped syncing</p>";
+                show_service_form = true;
+                show_partner_form = false;
+                current_service_name = null;
+                current_partner_name = null;
+                can_start_sync = false;
+                services = {};
+                show_message_box = false;
+                sync_is_running = false;
+                show_stop_sync = false;
 
 
+            }else{
+                logs_at_bottom_of_screen += "<p class='log_error'> API /v1/options/exit "+ body.error +"</p>";
+            }
+            return res.redirect('/');
+        }
+    });
+});
+
+// need to tell other node app manually that u stopped the sync otherwise if they try to stop it they will get error saying service_name not found since that is removed after stopping the sync
+// here completely trust the other app to not lie fine for demo purposes change for real application
+router.get('/stop_sync_inform_other_node_app', function(req, res, next) {
+    if(sync_is_running === false){
+        res.json({ok: 0});
+    }
+    logs_at_bottom_of_screen += "<p class='log_ok'>successfully stopped syncing</p>";
+    show_service_form = true;
+    show_partner_form = false;
+    current_service_name = null;
+    current_partner_name = null;
+    can_start_sync = false;
+    services = {};
+    show_message_box = false;
+    sync_is_running = false;
+    show_stop_sync = false;
+
+    res.json({ok: 1});
 
 });
 

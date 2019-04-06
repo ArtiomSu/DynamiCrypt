@@ -53,7 +53,7 @@ void handle_accept(peer::ptr peer, const boost::system::error_code & err, ip::tc
     peer->start("",""); // starts current client
     // creates and listens for new client
     peer::ptr new_peer = peer::new_(false); // false to accepting connection
-    std::cout << "handle_accept run test" << std::endl;
+    //std::cout << "handle_accept run test" << std::endl;
     acceptor->async_accept(new_peer->sock(), boost::bind(handle_accept,new_peer,_1,acceptor)); // this 
 }
 

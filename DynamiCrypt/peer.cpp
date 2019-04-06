@@ -72,7 +72,7 @@ void peer::stop(){
     peers.erase(it);
     }
     std::cout << "Stopping synchronisation for service " << service_name_ << std::endl;
-    
+        
     // probably best to put it in here since on error called stop too.
     int found_service_in_api_service_data_handler = api_service_data_handler.remove_service(service_name_);
     if(!found_service_in_api_service_data_handler){
@@ -128,7 +128,7 @@ void peer::on_connect(const error_code & err, std::string service_name, std::str
     //for(int b; b< MAX_TPMS_PER_PEER; b++){ //create 10 tpms
     for(int b=0; b< MAX_TPMS_PER_PEER; b++){ //create 10 tpms
         int id = tpm_handler.create_new_tpm(service_name, partner_name);
-
+        
         if ( !err){      
             std::stringstream ss;                                               // send self service name
             ss << "2\t" << id << "\t" << tpm_handler.get_iteration(id) << "\t" << service_name << "\t" << partner_name << "\n";
@@ -152,9 +152,10 @@ void peer::on_init(std::vector<std::string> & parsed_msg){
     
             
     //api_service_data_handler.new_service("self", parsed_msg.at(3));
+    std::cout << "on_init service_name is " << parsed_msg.at(4);
+    std::cout << " partners service name is " << parsed_msg.at(3) << std::endl;
     
-    
-    
+    service_name_ = parsed_msg.at(4); //needed for when type of peer is accepting
     int id = tpm_handler.create_new_tpm(parsed_msg.at(4),parsed_msg.at(3));
     tpm_handler.set_partner(id, std::stoi(parsed_msg.at(1)));
 
