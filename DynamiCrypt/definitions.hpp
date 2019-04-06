@@ -49,9 +49,11 @@ extern void update_peers_changed();
 
 extern int begin_sync(std::string address, int port, std::string service_name, std::string partner_name);
 
+extern int stop_sync(std::string service_name);
+
 extern std::string hash_with_sha_256(std::string data);
 
-extern std::string test_api();
+//extern std::string test_api();
 
 typedef std::vector<boost::shared_ptr<peer>> array; // array of shared pointers to talk_to_client class
 

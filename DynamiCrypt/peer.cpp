@@ -24,6 +24,7 @@ void peer::start(std::string service_name, std::string partner_name){
         
     std::cout << " type of peer " << sock_using_ep << std::endl;
     started_ = true;
+    service_name_ = service_name;
     if(sock_using_ep){ // this makes the connection so write straight away
         //endpoint_(ip::address::from_string(ip_address_), ip_port_);
         endpoint_ = boost::make_shared<boost::asio::ip::tcp::endpoint>(boost::asio::ip::address::from_string(ip_address_), ip_port_);
@@ -70,6 +71,15 @@ void peer::stop(){
     array::iterator it = std::find(peers.begin(), peers.end(), self);
     peers.erase(it);
     }
+    std::cout << "Stopping synchronisation for service " << service_name_ << std::endl;
+    
+    // probably best to put it in here since on error called stop too.
+    int found_service_in_api_service_data_handler = api_service_data_handler.remove_service(service_name_);
+    if(!found_service_in_api_service_data_handler){
+        std::cout << "stopping sync service_name " << service_name_ << " not found in api_service_data_handler" << std::endl;
+    }
+    
+    
     update_peers_changed();
 }
 

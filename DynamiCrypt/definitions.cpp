@@ -43,10 +43,45 @@ int begin_sync(std::string address, int port, std::string service_name, std::str
     return 1;
 }
 
+int stop_sync(std::string service_name){
+    array copy;
+    { boost::recursive_mutex::scoped_lock lk(read_lock);
+      copy = peers;
+    }
+    int found_service_in_peers = 0;
+    for( array::iterator b = copy.begin(), e = copy.end(); b != e; ++b){
+        if(!service_name.compare((*b)->get_service_name())){
+            (*b)->stop();
+            found_service_in_peers = 1;
+        }
+        //(*b)->set_peers_changed();
+    }
+    /*
+    int found_service_in_api_service_data_handler = api_service_data_handler.remove_service(service_name);
+    if(found_service_in_peers && found_service_in_api_service_data_handler){
+        return 1;
+    }else if(found_service_in_peers){
+        return 2;
+    }else if(found_service_in_api_service_data_handler){
+        return 3;
+    }else{
+        return 0;
+    }
+     */
+    if(found_service_in_peers){
+        return 1;
+    }else{
+        return 0;
+    }
+    
+    
+}
+
+/*
 std::string test_api(){
     std::string test_string = "testing extern string";
     return test_string;
-}
+}*/
 
 std::string hash_with_sha_256(std::string data){
     CryptoPP::byte const* pbData = (CryptoPP::byte*)data.data();

@@ -1,16 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="301dbe8a-911c-45db-ba56-2560de0293fd" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/public/javascripts/jquery.min.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../DynamiCrypt/TpmNetworkHandler.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../DynamiCrypt/TpmNetworkHandler.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/javascripts/Form_handler.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/javascripts/Form_handler.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/stylesheets/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/stylesheets/style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/api.js" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/views/index.ejs" beforeDir="false" afterPath="$PROJECT_DIR$/views/index.ejs" afterDir="false" />
-    </list>
+    <list default="true" id="301dbe8a-911c-45db-ba56-2560de0293fd" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -34,8 +25,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/routes/api.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="460">
-              <caret line="74" column="35" selection-start-line="74" selection-start-column="14" selection-end-line="74" selection-end-column="35" />
+            <state relative-caret-position="253">
+              <caret line="65" lean-forward="true" selection-start-line="65" selection-end-line="65" />
             </state>
           </provider>
         </entry>
@@ -238,12 +229,12 @@
       <workItem from="1554118465488" duration="599000" />
       <workItem from="1554142397160" duration="50000" />
       <workItem from="1554142479802" duration="603000" />
-      <workItem from="1554391014902" duration="20812000" />
+      <workItem from="1554391014902" duration="21420000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="45261000" />
+    <option name="totallyTimeSpent" value="45869000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="6718" y="640" width="1600" height="1331" extended-state="0" />
@@ -337,8 +328,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/routes/api.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="460">
-          <caret line="74" column="35" selection-start-line="74" selection-start-column="14" selection-end-line="74" selection-end-column="35" />
+        <state relative-caret-position="253">
+          <caret line="65" lean-forward="true" selection-start-line="65" selection-end-line="65" />
         </state>
       </provider>
     </entry>

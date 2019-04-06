@@ -564,8 +564,80 @@ void API_service::leave(const Pistache::Rest::Request& request, Pistache::Http::
      send
      nothing really needed so ok will do
      */
+    rapidjson::Document document;
+    char * jsonBody = new char [request.body().length()+1];
+    strcpy (jsonBody, request.body().c_str());
+    document.Parse(jsonBody);
     
-    response.send(Pistache::Http::Code::Ok, "ok");
+        
+    rapidjson::StringBuffer buffera;
+    rapidjson::Writer<rapidjson::StringBuffer> writera(buffera);
+    
+    std::string service_name;
+    int data_ok = 1;
+    if(document.HasMember("service_name")){
+        if(document["service_name"].IsString()){
+            service_name = document["service_name"].GetString();
+        }
+        else{
+            data_ok = 0;
+            
+        }
+    }
+    else{
+        data_ok = 0;
+    }
+    
+    
+    if(data_ok){
+        int result = stop_sync(service_name);
+        /*
+        std::string error;
+        if(result = 1){
+            std::cout << "service " << service_name << " successfully removed" << std::endl;
+            writera.StartObject(); 
+            writera.Key("status");                
+            writera.String("ok");
+            writera.EndObject();
+        }else if(result = 2){
+            error = "service_name not found in api_service_data_handler";
+        }else if(result = 3){
+            error = "service_name not found in peers";
+        }else{
+            error = "service_name not found anywhere";
+        }    
+        
+        if(result != 1){
+            std::cout << "service " << service_name << " partially removed" << std::endl;
+            writera.StartObject(); 
+            writera.Key("error");                
+            writera.String(error.c_str(), error.length());
+            writera.EndObject();
+        }*/
+        
+        if(result){
+            writera.StartObject(); 
+            writera.Key("status");                
+            writera.String("ok");
+            writera.EndObject();
+        }else{
+            writera.StartObject(); 
+            writera.Key("error");                
+            writera.String("service_name not found");
+            writera.EndObject();
+        }
+        
+        
+    } else{
+        writera.StartObject(); 
+        writera.Key("error");                
+        writera.String("invalid request");
+        writera.EndObject();
+    }
+    
+    
+    
+    response.send(Pistache::Http::Code::Ok, buffera.GetString());
 }
 
 

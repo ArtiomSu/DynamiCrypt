@@ -72,6 +72,10 @@ public:
         peers_changed_ = true; 
     }
     
+    std::string get_service_name(){
+        return service_name_;
+    }
+    
 private:
     void on_read(const error_code & err, size_t bytes);
     
@@ -103,7 +107,7 @@ private:
     char read_buffer_[1024];
     char write_buffer_[1024];
     bool started_;
-    std::string username_;
+    std::string service_name_;
     boost::posix_time::ptime last_ping_;
     bool peers_changed_;
     bool sock_using_ep;
