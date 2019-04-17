@@ -5,7 +5,6 @@
  */
 
 #include "API_service.hpp"
-#include "JSON_helper.hpp"
 #include "definitions.hpp"
 #include <string>
 

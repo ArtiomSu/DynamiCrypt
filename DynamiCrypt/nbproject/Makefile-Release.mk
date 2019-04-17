@@ -37,7 +37,6 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/_ext/8cd854a2/API_service.o \
 	${OBJECTDIR}/_ext/8cd854a2/API_service_data_handler.o \
-	${OBJECTDIR}/_ext/8cd854a2/JSON_helper.o \
 	${OBJECTDIR}/_ext/8cd854a2/SingleTpmNetworkHandler.o \
 	${OBJECTDIR}/_ext/8cd854a2/System_Helper.o \
 	${OBJECTDIR}/_ext/8cd854a2/TpmNetworkHandler.o \
@@ -83,11 +82,6 @@ ${OBJECTDIR}/_ext/8cd854a2/API_service_data_handler.o: /media/veracrypt1/College
 	${MKDIR} -p ${OBJECTDIR}/_ext/8cd854a2
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/8cd854a2/API_service_data_handler.o /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/API_service_data_handler.cpp
-
-${OBJECTDIR}/_ext/8cd854a2/JSON_helper.o: /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/JSON_helper.cpp
-	${MKDIR} -p ${OBJECTDIR}/_ext/8cd854a2
-	${RM} "$@.d"
-	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/8cd854a2/JSON_helper.o /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/JSON_helper.cpp
 
 ${OBJECTDIR}/_ext/8cd854a2/SingleTpmNetworkHandler.o: /media/veracrypt1/CollegeSyncUnison/FYP/code/Dynamicrypt/git/DynamiCrypt/DynamiCrypt/SingleTpmNetworkHandler.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/8cd854a2

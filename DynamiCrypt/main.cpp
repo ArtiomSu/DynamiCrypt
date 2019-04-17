@@ -38,10 +38,15 @@
 
 #include "APIServer.hpp"
 
-//g++ *.cpp -lboost_system -lpthread -lboost_thread -lboost_program_options -lcryptopp -o sync
-//g++ *.cpp -lboost_system -lpthread -lboost_thread -lboost_program_options -lcryptopp -lpistache -o sync-test
-//./sync-test --listen-port 8003 --api-port 9200
+/*
 
+quick compile
+g++ *.cpp -lboost_system -lpthread -lboost_thread -lboost_program_options -lcryptopp -lpistache -o DynamiCrypt
+
+quick execute
+./DynamiCrypt --listen-port 8001 --api-port 9081 
+
+*/ 
 
 using namespace boost::asio;
 using ip::tcp;
@@ -91,17 +96,22 @@ void seed_random(){
 
 
 int main(int argc, char* argv[]) {
-    //boost::shared_ptr<ip::tcp::acceptor> acceptor(new ip::tcp::acceptor(service));
-   // ip::tcp::endpoint ep(ip::tcp::v4(), 8002);
-   // acceptor->open(ip::tcp::v4());
-   // acceptor->bind(ep);
     seed_random();
-    //test_term();
     
     int listen_port = -1;
     int connect_port = -1;
     int api_port = -1;
-    char help_message[] = {"sync --listen-port 8001 --api-port 9081 --connect-port 8002"};
+    char help_message[] = {"Options for DynamiCrypt\n"
+            "Main Options\n"
+            "\t--help: prints this page\n\n"
+            "\t--listen-port: set port for sync server to listen on cannot be the same as --api-port eg. 9080 \n\n"
+            "\t--connect-port: DEPRICIATED do not use. connect to other sync server straight away eg. 9084 \n\n"
+            "\t--api-port: set port for API to listen on cannot be the same as --listen-port eg. 9090\n\n"
+            "\t--PRINT_SYNC_MESSAGES: 0 to disable sync messages as they can be quite spammy 1 to enable. DEFAULT 0\n\n"
+            "\t--PRINT_API_CRYPT_MESSAGES: prints out encryption decryption messages when 1. 0 to disable DEFAULT 1\n\n"
+            "\t--PRINT_KEYS_TO_EXTERNAL_GNOME_TERMINAL: Prints sync keys to external terminal. only works if you have gnome terminal installed. 0 to print to same terminal as other. DEFAULT 1\n\n"
+            "\n\nBasic Usage:\n\tDynamiCrypt --listen-port 8001 --api-port 9081"};
+   
     try {
 
         boost::program_options::options_description desc("Allowed options");
@@ -110,6 +120,9 @@ int main(int argc, char* argv[]) {
             ("listen-port", boost::program_options::value<int>(), "set port to listen on")
             ("connect-port", boost::program_options::value<int>(), "set port to connect to")
             ("api-port", boost::program_options::value<int>(), "set port for API to listen to")
+            ("PRINT_SYNC_MESSAGES", boost::program_options::value<int>(), "0 to disable sync messages as they can be quite spammy")
+            ("PRINT_API_CRYPT_MESSAGES", boost::program_options::value<int>(), "prints out encryption decryption messages when 1")
+            ("PRINT_KEYS_TO_EXTERNAL_GNOME_TERMINAL", boost::program_options::value<int>(), "Prints sync keys to external terminal. only works if you have gnome terminal installed")
         ;
 
         boost::program_options::variables_map vm;        
@@ -132,6 +145,19 @@ int main(int argc, char* argv[]) {
         if (vm.count("api-port")) {
             api_port = vm["api-port"].as<int>();
         } 
+        
+        if (vm.count("PRINT_SYNC_MESSAGES")) {
+            PRINT_SYNC_MESSAGES = vm["PRINT_SYNC_MESSAGES"].as<int>();
+        } 
+        
+        if (vm.count("PRINT_API_CRYPT_MESSAGES")) {
+            PRINT_API_CRYPT_MESSAGES = vm["PRINT_API_CRYPT_MESSAGES"].as<int>();
+        } 
+        
+        if (vm.count("PRINT_KEYS_TO_EXTERNAL_GNOME_TERMINAL")) {
+            PRINT_KEYS_TO_EXTERNAL_GNOME_TERMINAL = vm["PRINT_KEYS_TO_EXTERNAL_GNOME_TERMINAL"].as<int>();
+        } 
+        
              
     }
     catch(std::exception& e) {

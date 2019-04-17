@@ -33,25 +33,31 @@ SingleTpmNetworkHandler::SingleTpmNetworkHandler(int id, std::string service_nam
     max_iterations_ = (tpm.L*tpm.L*tpm.L*tpm.L)*tpm.N*tpm.K;
 
     tmpinputvector.xLength(tpm.K, tpm.N);
-       
-    std::stringstream ss;
-          
-    std::string term = "gnome-terminal --geometry=95x27 > /dev/null 2>&1;test=\"$(ls /dev/pts)\";inarr=(${test});max=${ar[0]};for n in \"${inarr[@]}\" ; do ((n > max)) && max=$n; done; echo $max";
-    ss << "/dev/pts/";
-    ss << System_helper::exec(term.c_str());
+    
+    time_sync_start_ = std::chrono::steady_clock::now();
+    
+    if(PRINT_KEYS_TO_EXTERNAL_GNOME_TERMINAL){
+        std::stringstream ss;
 
-    filename = ss.str();
-    filename.erase(std::remove(filename.begin(), filename.end(), '\n'), filename.end());
+        std::string term = "gnome-terminal --geometry=95x27 > /dev/null 2>&1;test=\"$(ls /dev/pts)\";inarr=(${test});max=${ar[0]};for n in \"${inarr[@]}\" ; do ((n > max)) && max=$n; done; echo $max";
+        ss << "/dev/pts/";
+        ss << System_helper::exec(term.c_str());
 
-    key_log.open(filename, std::ios::out);
-    if (key_log.is_open()){
-        std::cout << "writing to file" << std::endl;
-        key_log << "Tpm Created with id: " << tpm_id_ << "\n";
+        filename = ss.str();
+        filename.erase(std::remove(filename.begin(), filename.end(), '\n'), filename.end());
+
+        key_log.open(filename, std::ios::out);
+        if (key_log.is_open()){
+            std::cout << "writing to file" << std::endl;
+            key_log << "Service: " << service_name_ << "Tpm Created with id: " << tpm_id_ << "\n";
+        }else{
+            std::cout << "cant write to file:" << filename << ":spacetest" << std::endl;
+            std::exit(2);
+        }
+        key_log.close();
     }else{
-        std::cout << "cant write to file:" << filename << ":spacetest" << std::endl;
-        std::exit(2);
+        std::cout << "Service: " << service_name_ << " Tpm Created with id: " << tpm_id_ << std::endl;
     }
-    key_log.close();
 }
 
 int SingleTpmNetworkHandler::increase_key_counter(){
@@ -170,16 +176,26 @@ void SingleTpmNetworkHandler::add_key_to_proper_keys(std::string key){
     //proper_keys.push_back(key);
     
     api_service_data_handler.add_key(service_name_, key);
+    
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    
+    std::chrono::duration<int,std::milli> duration( std::chrono::duration_cast<std::chrono::duration<int,std::milli>>(end-time_sync_start_) ) ;
+     
 
-
-    key_log.open(filename, std::ios::out);
-    if (key_log.is_open()){
-        std::cout << "writing to file" << std::endl;
-        key_log << "tpm_id:" << tpm_id_ << " key:" << key << "\n";
+    if(PRINT_KEYS_TO_EXTERNAL_GNOME_TERMINAL){
+        key_log.open(filename, std::ios::out);
+        if (key_log.is_open()){
+            std::cout << "writing to file" << std::endl;
+            key_log << "Service: " << service_name_ << " tpm_id:" << tpm_id_ << " key:" << key << "\nKey generated after " << iteration_ << " iterations" << " and took " << duration.count() << " milliseconds.\n\n" ;
+        }else{
+            std::cout << "cant write to file" << std::endl;
+        }
+        key_log.close();
     }else{
-        std::cout << "cant write to file" << std::endl;
+        std::cout << "Service: " << service_name_ << " tpm_id:" << tpm_id_ << " key:" << key << "\n Key generated after " << iteration_ << " iterations" << " and took " << duration.count() << " milliseconds.\n"<< std::endl;
     }
-    key_log.close();
+    
+    time_sync_start_ = std::chrono::steady_clock::now();
 }        
         
         

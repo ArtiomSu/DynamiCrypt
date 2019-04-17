@@ -32,14 +32,15 @@ class peer;
 
 extern const int MAX_TPMS_PER_PEER;
 extern const int MAX_BUFF;
-extern const int PRINT_SYNC_MESSAGES;
+extern int PRINT_SYNC_MESSAGES;
 extern const int SLOW_DOWN;
 //constants used to check encryption status
 extern const std::string DYNAMICRYPT_API_WAIT;
 extern const std::string DYNAMICRYPT_API_FAILED_DECRYPT;
 extern const std::string DYNAMICRYPT_API_ERROR;
 
-extern const int PRINT_API_CRYPT_MESSAGES;
+extern int PRINT_API_CRYPT_MESSAGES;
+extern int PRINT_KEYS_TO_EXTERNAL_GNOME_TERMINAL;
 
 extern boost::recursive_mutex read_lock;
 extern boost::recursive_mutex write_lock;

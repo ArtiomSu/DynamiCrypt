@@ -20,6 +20,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <vector>
+#include <chrono>
 
 class SingleTpmNetworkHandler{
 private:
@@ -35,7 +36,8 @@ private:
     std::ofstream key_log;
     std::string filename;
     std::string service_name_;
-    std::string partner_name_;    
+    std::string partner_name_;  
+    std::chrono::steady_clock::time_point time_sync_start_;
     
 public:  
     SingleTpmNetworkHandler(int id, std::string service_name, std::string partner_name);
