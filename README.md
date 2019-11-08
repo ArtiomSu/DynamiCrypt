@@ -73,7 +73,8 @@ You can type and send messages by typing into the message box. You will see your
 You can send messages automatically by using another script called send_messages.py.<br/>
 Again make sure to change the variables in the script to suit your setup. The script is handy for testing different ecryption options i.e. fast or secure.
 
-
+### Demo
+[![Demo](https://img.youtube.com/vi/LsR4XsGrDCY/0.jpg)](https://www.youtube.com/watch?v=LsR4XsGrDCY)
 
 
 
